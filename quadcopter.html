@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">e-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Crazyflie 2.0 Quadcopter</h1>
+							<!-- <span class="image main"><img src="images/pic13.jpg" alt="" /></span> -->
+							<p>The objective of this project was to develop a robust control scheme to enable a quadcopter to track the desired trajectories in the presence of external disturbances. 
+								For this project, the Crazyflie 2.0 was utilized as the quadcopter. This quadcopter is an <a href="https://www.bitcraze.io/products/old-products/crazyflie-2-0/
+								">open source project</a> with both the source code and hardware design documented. 
+								It was paired with ROS 1.0 and Gazebo to manage and simulate the control law. <br/>
+								For this project, a sliding mode controller for altitude and attitude control was designed to track the desired trajectories and visit a set of desired waypoints. 
+								<a href="https://github.com/Dom-Ferro/rbe502final">Find the full GitHub implementation here.</a>
+							</p>
+
+							<h3>Quadcopter Trajectory Following</h3>	
+							<center>
+								<video width="1280" height="720" controls>
+									<source src="images/ferro_jackson_movie.mp4">
+									Your browser does not support the video tag.
+							  </video>
+							  <p>Youtube Link Here</p>
+							</center>					
+							<center>
+								<img src="images/iso_quad_traj.png">
+								<img src="images/top_quad_traj.png">
+								<p>Quadcopter Planned Trajectory (Green) vs Actual Path (Blue)</p>
+							</center>	
+
+							<h3>Discussion</h3>
+							<p>The quadcopter was able to stay within the boundary layer of the desired trajectory, but required further tuning to decrease the boundary layer and get a more accurate trajectory following. It can be seen that the quadcopter follows the XY coordinates significantly better than the Z coordinates. This can be attributed to how the quadcopter moves; by tilting and moving at a very slow 15 second trajectory. If the trajectory was quicker (10 seconds), the quadcopter could tilt in a more stable manner and follow the desired Z trajectory closer. Further, the tuning values could be further optimized to push the robot further down the Z axis while also maintaining the necessary XY translational gains. 
+								It should also be noted that the Real Time Factor (RTF) played a tremendous role in determining the quadcopter stability. Indeed, computers with higher processing power performed better than computers with less. The same simulation is unable to be completed on a computer with an RTF of ~0.5 but can complete it with an RTF of ~0.98. Further, by recording the simulation, the quadcopter performs notably worse. This is a limitation of Gazebo. 
+							</p>
+
+							<h3>Control Law Derivation</h3>
+							<p>The exact derivation cannot be provided here as this Final Project is still being utilized by Worcester Polytechnic Insitute. However, the laws of a Sliding Mode Controller are as follows.</p>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Get in touch</h2>
+								<form method="post" action="#">
+									<div class="fields">
+										<div class="field half">
+											<input type="text" name="name" id="name" placeholder="Name" />
+										</div>
+										<div class="field half">
+											<input type="email" name="email" id="email" placeholder="Email" />
+										</div>
+										<div class="field">
+											<textarea name="message" id="message" placeholder="Message"></textarea>
+										</div>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Send" class="primary" /></li>
+									</ul>
+								</form>
+							</section>
+							<section>
+								<h2>Follow</h2>
+								<ul class="icons">
+									<li><a href="#" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon brands style2 fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands style2 fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon brands style2 fa-dribbble"><span class="label">Dribbble</span></a></li>
+									<li><a href="#" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+									<li><a href="#" class="icon brands style2 fa-500px"><span class="label">500px</span></a></li>
+									<li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
+									<li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+								</ul>
+							</section>
+							<ul class="copyright">
+								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
