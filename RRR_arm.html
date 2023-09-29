@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>RRR Robotic Arm Control</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+                            <h1 style="margin-bottom: 0.1em;">RRR Robotic Arm Control</h1>
+
+                            <p class="button" style="margin: 0.1em;">Forward/Inverse Kinematics</p>
+                            <p class="button" style="margin: 0.1em;">DH Parameters</p>
+                            <p class="button" style="margin: 0.1em;">MATLAB</p>
+                            <p class="button" style="margin: 0.1em;">Camera Calibration</p>
+							<p class="button" style="margin: 0.1em;">Camera Item Segmentation</p>
+                            <p class="button" style="margin: 0.1em;">3D Printing</p>
+
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            <p>
+                                In this project, we implemented a basic control scheme to coordinate a 3D-printed 3DOF robotic arm equipped with an eye-to-hand camera. 
+                                To evaluate the efficacy of the controller, we sorted 3D-printed balls based on their color with a pick-and-place operation. 
+                                This robotic arm consists of three ‘smart’ servos and one standard servo to control the gripper. 
+                                In front of the arm is a checkerboard plane with multicolored plastic balls that are identified and moved to a designated location.
+                            </p>
+                            <div style="align-content: center; text-align: center;">
+                                <video width="100%" controls muted>
+                                    <source src="images/RRRControl/RBE3001_FinalProjectVideo 3.mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+
+                            <p>This was a 3-person team project lasting 7 weeks.</p>
+                            
+                            <h2>My Contribution</h2>
+                            <p>
+                                In this project, I assisted in defining the relationship between joint space and task space, coding this relationship into MATLAB, camera calibration, and overall algorithm support. 
+                            </p>
+                            
+                            <h2>Design Overview</h2>
+                            <p>
+                                <h4>Kinematic Representation & Forward Kinematics</h4>
+                                We modeled the relationship between joint space and task space with Devenin-Hartenberg (DH) Parameters and the Homogenous Transfer Function.
+                                In this manner, we can model the robot arm as a series of joints and links. DH Parameters classified into a homogenous transfer function enable the joint angles \(q\)
+                                to be input to a forward kinematics function, \(F\), to calculate the pose of the end effector, \(P\). This relationship is modeled as 
+
+                                $$\begin{alignat}{3} 
+								P &= F(q) \\
+                                P &= T_3^4(q_3) * T_2^3(q_2) * T_1^2(q_1) \\
+							    \end{alignat}$$
+                                
+                                Where \(T_i^{i+1}\) is the homogenous transformation matrix to traverse from joint \(i\) to joint \(i+1\). The transformation matrix also encodes the DH parameters specific to each joint and linkage. 
+                                <br/><br/>
+                                <h4>Inverse Kinematics</h4>
+                                Inverse Kinematics performs the reverse operation of forward kinematics. 
+                                This operation works to find the joint space given the task space. 
+                                However, there often are two configurations possible given only task space information. 
+                                An ‘elbow’ up configuration was opted for mathematically. This orientation favors positions in which motor 2, an intermediate joint, is at a higher elevation than the end effector. 
+
+                                <br/><br/>
+                                When the camera calculates the task space position of the colored balls, this information is fed into the inverse kinematics 
+                                algorithm to determine what joint angles must be attained to reach the balls. The inverse kinematics can be modeled as follows
+                                    
+                                $$\begin{alignat}{3} 
+                                    \text{while  } \| P_d - F(q_i)\| &> \epsilon, \epsilon \in \mathbb{R} \\
+                                    \Delta q_i &= J^{-1}(q_i)(p_d - F(q_i)) \\
+                                    q_i &= q_i + \Delta q_i \\
+                                    \end{alignat}$$
+
+                                Where \(P_d\) is the desired pose of the end effector (the colored balls), \(\epsilon\) is the maximum amount of error from the pose goal, and \(J(q)\) is the 
+                                jacobian of the forward kinematics function, \(F(q)\). This algorithm will work by checking if the end effector is within a predefined error ((\(\epsilon\))
+                                ). If the arm is not in this range, it will slowly approach the goal by utilizing the Jacobian Linearization and Taylor Series approach. 
+
+                                <br/><br/>
+                                <h4>Camera Pipeline</h4>
+                                
+                                The initial step in the pipeline, Image Acquisition, involves gathering images from the camera within MATLAB. 
+                                This is accomplished using the snapshot method, which captures images from the designated webcam. 
+                                <br/><br/>
+                                Once the image is successfully collected, the subsequent stage in the pipeline is Image Enhancement. 
+                                The primary goal here is to rectify distortions in the images, thereby eliminating lens distortion. 
+                                This step is vital for obtaining precise measurements from the images. 
+                                <br/><br/>      
+
+                                With the enhanced image in hand, the next task is Segmentation, where the robot's arm will isolate objects placed on the checkerboard. 
+                                This isolation is achieved by analyzing the saturation of the grayscale image and extracting the identified blobs for a more accurate response. 
+                                At this point, it’s possible to perform post-processing to collect the RBG information of each object to detect the color of the objects. 
+                                <br/><br>
+                                Lastly, information extraction can be done by calculating the centroid of the colored blobs and returning the X, Y 
+                                position of the blobs to the method above to be inputted into the transformation function and then into the inverse kinematics algorithm
+                                 to allow the robot arm to navigate to each object’s location. 
+
+                            </p>
+
+                            <h2>Other Media</h2>
+
+                            <div class="box alt">
+                                <div class="row gtr-uniform">
+                                    <div class="col-4"><span class="image fit"><img src="images/RRRControl/alt_view.png" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img style="margin-top: 35%;" src="images/RRRControl/arm_frames.png" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img src="images/RRRControl/testing_arm.png" alt="" /></span></div>
+                                </div>
+                                <br/>
+                            </div>
+
+						</div>
+					</div>
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script id="MathJax-script" async
+			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+	        </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+	</body>
+</html>

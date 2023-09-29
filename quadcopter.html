@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title></title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">e-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+					
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1 style="margin-bottom: 0.1em;">Crazyflie 2.0 Quadcopter</h1>
+								
+							<p class="button" style="margin: 0.1em;">Non-Linear Control</p>
+							<p class="button" style="margin: 0.1em;">Sliding Mode Controller</p>
+							<p class="button" style="margin: 0.1em;">ROS</p>
+							<p class="button" style="margin: 0.1em;">Gazebo</p>
+							<p class="button" style="margin: 0.1em;">MATLAB</p>
+							<p class="button" style="margin: 0.1em;">Python</p>
+							<p class="button" style="margin: 0.1em;">Simulation</p>
+
+							<h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+							<p>The objective of this project was to develop a robust control scheme to enable a quadcopter to track the desired trajectories in the presence of external disturbances. 
+								For this project, the Crazyflie 2.0 was utilized as the quadcopter. This quadcopter is an <a href="https://www.bitcraze.io/products/old-products/crazyflie-2-0/
+								">open source project</a> with both the source code and hardware design documented. 
+								It was paired with ROS 1.0 and Gazebo to manage and simulate the control law. <br/>
+								For this project, a sliding mode controller for altitude and attitude control was designed to track the desired trajectories and visit a set of desired waypoints. 
+								<br/><br/>
+								<!-- <a href="https://github.com/Dom-Ferro/rbe502final">Find the full GitHub implementation here.</a> -->
+							</p>
+
+							<h3>Quadcopter Trajectory Following</h3>	
+
+							<div style="align-content: center; text-align: center;">
+                                <video width="100%" controls="controls">
+                                    <source src="images/Quadcopter/ferro_jackson_movie.mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+							
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/Quadcopter/iso_quad_traj.png" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/Quadcopter/top_quad_traj.png" alt="" /></span></div>
+								</div>
+								<div style="text-align: center;"><p>Quadcopter Planned Trajectory (Green) vs Actual Path (Blue)</p></div>
+							</div>
+
+							<h3>Trajectory Generation</h3>
+							<p>
+								The desired waypoints are as follows:
+								<ul>
+									<li>P0 = (0,0,0) to P1 = (0,0,1) in 5 seconds</li>
+									<li>P1 = (0,0,1) to P2 = (1,0,1) in 15 seconds</li>
+									<li>P2 = (1,0,1) to P3 = (1,1,1) in 15 seconds</li>
+									<li>P3 = (1,1,1) to P4 = (0,1,1) in 15 seconds</li>
+									<li>P4 = (0,1,1) to P5 = (0,0,1) in 15 seconds</li>
+								</ul>
+								Where each waypoint (Px) is defined by the world coordinate frame in XYZ order. It’s important to note that between each traversal, the quadcopter will only be moving down one axis.
+								
+								<br/><br/>
+
+								A MATLAB function generated quintic polynomials for the desired position, velocity and acceleration of the Crazyflie 2.0 at any given time. 
+								Between each of the given desired setpoints, only one of the xyz coordinates changed. 
+								Due to this characteristic the trajectory generation for the 3D flight path was heavily simplified. 
+								The trajectory between two coordinates that stayed the same was simply the value of that coordinate, while the trajectory of the changing coordinate could be 
+								calculated using a one dimensional quintic polynomial generator. In MATLAB, the function takes in the start and end values for time, position, velocity, and 
+								acceleration. The function creates a fifth and fourth order function from both the initial time and the final time, resulting in a 4 equation system.
+								
+								By solving the system of equations for the symbolic variables, the coefficients for the quintic trajectory were found.
+								
+								<br/><br/>
+								The path between each of the five setpoints was calculated using this method and stitched together to create a piecewise function for the overall position of 
+								the quadcopter at any given time. The desired velocity and acceleration was found by simply taking the derivative of the position equation with respect to time. 
+								The graphs for the desired position, velocity, and acceleration can be seen below in below figure. 
+								<!-- The calculated desired trajectory equations were then inserted into the main python script to get the desired trajectory values as the quadcopter was controlled. -->
+
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-10"><span class="image fit"><img src="images/Quadcopter/trajGeneration.png" alt="" /></span></div>
+										<div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+								</div>
+
+							</p>
+
+							<h3>Controller Derivation</h3>
+							<p>
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-8"><span class="image fit"><img src="images/Quadcopter/copterDefined.png" alt="" /></span></div>
+										<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+								</div>
+								The derived controller that was implemented for the CrazyFlie 2.0 was a sliding mode controller. 
+								The derivation utilized the dynamics as a control affine system; the given dynamics in the control affine system form can be seen below. 
+								It was assumed throughout the derivation of this control law that all of the model parameters are known and any discrepancies in the nominal and 
+								actual values are handled through robust control methods.
+
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-8"><span class="image fit"><img src="images/Quadcopter/controlAffineSystemDef.png" alt="" /></span></div>
+										<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+								</div>
+
+								Here, \(n\) is the number of joints, \(m\) is the number of controllable inputs (motors), \(\dot{x}\) is the state space representation, 
+								and \(u\) is the control inputs. Before transforming the quadcopters equations of motion into the state space representation, 
+								they must first be defined. Below is the system dynamics assuming small angles.
+
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-6"><span class="image fit"><img src="images/Quadcopter/equationsOfMotion.png" alt="" /></span></div>
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+									<div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div>
+								</div>
+								The quadcopter has 6 degrees of freedom (DoFs) which results in 6 equations of motion. X,Y, and Z are the world coordinate positions of the quadcopter while Φ, θ, and Ψ are the roll, 
+								pitch, and yaw. The equations of motion are the second derivative of the position and roll, pitch, yaw. 
+								<br/><br/>
+								Only 4 equations of motions are utilized as there are only 4 control inputs (4 motors). For quadcopters, it is common to design a controller for 
+								the altitude and attitude only (z position, roll, pitch, and yaw). This makes the quadcopter control law <i>an underactuated system</i>. 
+								So, the q, the generalized coordinates matrix, is defined by below.
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-6"><span class="image fit"><img src="images/Quadcopter/generalizedCoordinates.png" alt="" /></span></div>
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+									<!-- <div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div> -->
+								</div>
+								Unforuntately, since this final project is still being utilized by Worcester Polytechnic Insitute, the exact derivation cannot be continued here as the derivation becomes too specific.
+								However, I am happy to answer any questions about the derivation via my email: <a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							</p>
+							<!-- <h3>Discussion</h3>
+							<p>The quadcopter was able to stay within the boundary layer of the desired trajectory, but required further tuning to decrease the boundary layer and get a more accurate trajectory following. It can be seen that the quadcopter follows the XY coordinates significantly better than the Z coordinates. This can be attributed to how the quadcopter moves; by tilting and moving at a very slow 15 second trajectory. If the trajectory was quicker (10 seconds), the quadcopter could tilt in a more stable manner and follow the desired Z trajectory closer. Further, the tuning values could be further optimized to push the robot further down the Z axis while also maintaining the necessary XY translational gains. 
+								It should also be noted that the Real Time Factor (RTF) played a tremendous role in determining the quadcopter stability. Indeed, computers with higher processing power performed better than computers with less. The same simulation is unable to be completed on a computer with an RTF of ~0.5 but can complete it with an RTF of ~0.98. Further, by recording the simulation, the quadcopter performs notably worse. This is a limitation of Gazebo. 
+							</p> -->
+
+						</div>
+					</div>
+				
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+            <script id="MathJax-script" async
+                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+            </script>
+
+	</body>
+</html>

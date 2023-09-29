@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Modular Mobile Manipulator</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">e-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1 style="margin-bottom: 0.1em;">Design and Implementation of a Modular Mobile Manipulator</h1>
+							<p class="button" style="margin: 0.1em;">Python</p>
+							<p class="button" style="margin: 0.1em;">ROS</p>
+							<p class="button" style="margin: 0.1em;">SOLIDWORKS</p>
+							<p class="button" style="margin: 0.1em;">Raspberry Pi</p>
+							<p class="button" style="margin: 0.1em;">Panda Arm</p>
+							<p class="button" style="margin: 0.1em;">Gazebo</p>
+							<p class="button" style="margin: 0.1em;">Abstract Programming</p>
+                            <p class="button" style="margin: 0.1em;">MoveIt!</p>
+							<p class="button" style="margin: 0.1em;">PID Control</p>
+                            <p class="button" style="margin: 0.1em;">3D Printing</p>
+							<p class="button" style="margin: 0.1em;">Manufacturing</p>
+							<p class="button" style="margin: 0.1em;">Embedded Programming</p>
+
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+							<p>
+								Mobile robotic bases provide mobility for robotic serial manipulators and are essential for service technologies, warehouse applications, and robotics research.
+								 However, current mobile bases are expensive and require significant effort to integrate with robotic manipulators. 
+								 The goal of this Major Qualify Project (MQP) was to design and implement a modular, programmable, and affordable mobile platform for interfacing with various manipulators. 
+								 The team created a chassis and elevator system to increase mobility and introduce effortless electrical and mechanical integration with various manipulators utilizing a modular design. 
+								 Furthermore, abstraction between user input and manipulator-specific hardware drivers was developed for seamless control of the base and manipulator. <br/>
+								 <a href="https://digital.wpi.edu/concern/student_works/h702q9959?locale=en">Read the full report here.</a>
+								  <br/> <br/>
+								 This was a 5 person undergraduate capstone project lasting one year. 
+							</p>
+
+							<h2>My Contribution</h2>
+							I worked primarily with the Software and Mechanical Team. I designed the suspension, and mecanum wheels, and contributed heavily to the chassis and modular insert. 
+							I spent a significant amount of time ensuring our CAD model accurately represented our real-life robot. 
+							On the software side, I integrated the MoveIt! stack, created the embedded software the Raspberry Pi used to communicate with sensors and ROS nodes, 
+							and assisted with state machine logic, abstract programming and the simulation environment.  
+							<br/><br/>
+
+
+							<h2>Project Showcase Video</h2>							
+							<div style="justify-content: center; align-items: center;">
+								<video width="100%" controls>
+								<source src="images/MQP/Robotic Base MQP Video.mp4" type="video/mp4">
+								Your browser does not support the video tag.
+							  </video>
+							  <a href="https://www.youtube.com/watch?v=HRme_Il3014"><p style="text-align: center;">https://www.youtube.com/watch?v=HRme_Il3014</p></a>
+							</div>
+							<h2>Modular Insert</h2>
+
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/MQP/universal-plug-vertspace.jpg" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/MQP/modular mqp.gif" alt="" /></span></div>
+								</div>
+							</div>
+
+							<p>The Modular Insert (MI) was designed to house the Controller, 
+								a necessary computer for controller many different robotic arms, and plug into place to the main robot with the Universal Plug. 
+								This functionality enables any robotic arm to be mounted onto the MI and interface with the Mobile Base. We designed a cut-out in the Mobile Base to be able to fit a 
+								maximum size of 18.7" x 16.7" x 10.6" (the UR5e controller). The MI also can physically mount any robotic arm and has handles for easy transportation. 
+								Finally, the wings on the MI are used to mount onto the Home Base, a charging station.
+							</p>
+							<p></p>
+							<h2>Elevators - Pivoting and 24" Vertical Translation</h2>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/MQP/mqp-tilt-border.gif" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div>
+								</div>
+							</div>
+							<p>3 Scissor Jacks enable for elevation of the robotic arm and MI. Each scissor jack is individually actuated and controlled with a P controller to 
+								ensure accurate altitude translation. By keeping 1 or more scissor jacks stationary, the entire tabletop can pivot. In practice, we use pivoting to reach into obscure areas.
+							</p>
+							
+							<h2>Reliability and Safety</h2>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-12"><span class="image fit"><img src="images/MQP/mqp reliability.png" alt="" /></span></div>
+								</div>
+							</div>
+
+							<p>The Battery Management System (BMS) provides overcurrent, overcharge, and undercharge protection while balancing individual battery cells. 
+								The limit switches prevented the elevators from overcompressing and guaranteed a reliable home position. Our robot was constructed in Gazebo, 
+								a simulation software, to verify untested code. It demonstrated modularity and abstraction between arms.
+							</p>
+
+							<h2>Robot Functionality</h2>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-12"><span class="image fit"><img src="images/MQP/functionality mqp (1).gif" alt="" /></span></div>
+								</div>
+							</div>
+							
+							<h2>Task Completion</h2>
+							<div style="justify-content: center;">
+								<video width="100%" controls="controls">
+									<source src="images/MQP/5x full task.mov">
+									Your browser does not support the video tag.
+								  </video>
+							</div>
+
+							<br/><br/>
+							<h2>Project Poster</h2>
+							<!-- <center>
+								<iframe src="images/MQP Poster.pdf" width="width"></iframe>
+							</center>
+
+							<div style="width: 100%; height: 1000%">
+								<embed id="frPDF" height="1000%" width="100%" src="images/MQP Poster.pdf"></embed>
+							</div> -->
+
+							<div style="position:relative;padding-top:70%;">
+								<iframe style="position:absolute;left:0;top:0;height:100%;width:100%;" src="images/MQP/MQP Poster.pdf" width="640" height="480"></iframe>
+							</div>
+							
+							
+							<br/><br/>
+							<h2>Construction Timelapse</h2>
+							<div style="justify-content: center;">
+								<video width="49.8%" controls="controls">
+									<source src="images/MQP/reassembly timelapse 1.mp4">
+									Your browser does not support the video tag.
+									</video>
+								<video width="49.8%" controls="controls">
+									<source src="images/MQP/reassembly timelapse 1.mp4">
+									Your browser does not support the video tag.
+
+								</video>
+								<p>To powder coat, we had to disassemble the entire robot and prepare it for the oven. These videos showcase the  sprint to reassemble the entire robot in about 8 hours to meet our rapidly approaching
+									deadline.</p>
+							</div>
+							
+
+							<h2>Additional Media</h2>
+
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-4"><span class="image fit"><img src="images/MQP/robotMovingIRL.gif" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/Robot_Render_MQP.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/mobilitysim_cropped.gif" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/drivetrain.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/jacks + limit switches.gif" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/rpiIRL.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/limitSwitch.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/gen3Gazebo.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/limitSwitchCAd.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/explodedIRL.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/suspensionIRL.png" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/suspension_render.png" alt="" /></span></div>
+									
+									
+									<div class="col-4"><span class="image fit"><img src="images/MQP/PXL_20220405_114624703.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/IMG_1176.JPG" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/PXL_20220331_225048753.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/Building on rpi.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/MQP/PXL_20220409_233956517.jpg" alt="" /></span></div>
+									<div class="col-12"><span class="image fit"><img src="images/MQP/Mobile Base State Diagram.png" alt="" /></span></div>
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-8"><span class="image fit"><img src="images/MQP/presentationDay.png" alt="" /></span></div>
+									
+
+
+								</div>
+							</div>
+
+
+						</div>
+					</div>
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

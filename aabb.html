@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>AABB</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1 style="margin-bottom: 0.1em;">6DOF Discrete AABB Distance Detection Algorithm</h1>
+
+							<p class="button" style="margin: 0.1em;">Haptics</p>
+                            <p class="button" style="margin: 0.1em;">Distance Detection</p>
+                            <p class="button" style="margin: 0.1em;">Python</p>
+							<p class="button" style="margin: 0.1em;">Algorithms</p>
+                            <p class="button" style="margin: 0.1em;">OpenGL</p>
+                            <p class="button" style="margin: 0.1em;">Axis Aligned Bounding Box</p>
+                            
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            <p>
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <!-- <div class="col-0"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                        <div class="col-6"><span class="image fit"><img style="margin-top: 8%;" src="images/AABB/aabb-bunny.gif" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/bunnyaabbnodes.jpg" alt="" /></span></div>
+                                        <!-- <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                    </div>
+                                </div>
+                                This project designed a 6 Degree of Freedom (DOF) distance detection algorithm to calculate the approximate closest distance of an object (the Standford Bunny) to a specified location. 
+                                To simplify the model, an Axis Aligned Bounding Box (AABB) is divided across the model, dividing geometrically complex regions into smaller regions to retain accuracy. 
+                                A Depth First Search (DFS) algorithm is applied to the AABB tree to determine the closest node to the specified location. 
+                                Further, the AABB tree is calculated only once initially and updated with a homogenous transformation matrix. 
+
+                                <br/><br>
+                                This was a single-person, 2 week-long project.
+                            </p>
+                            
+                            <h3>Intro</h3>
+                            <p>
+                                Haptic interaction studies optimized implementations of hardware feedback concerning virtual world simulations. 
+                                Haptic interaction algorithms need to be calculated quickly and repeatedly to give the illusion of fluid feedback. 
+                                Often, haptic devices are used to move virtual objects and can generate normal force feedback depending on whether a virtual collision is present. 
+                                <br/><br/>
+                                This paper develops an extension of the same principles used in haptic interaction: a six-degree-of-freedom discrete AABB distance detection algorithm. 
+                                Indeed, discrete haptic interaction calculates the minimum distance between objects at every timestep. 
+                                To simplify the object model, an Axis Aligned Bounding Box (AABB) Bounding Volume Hierarchy (BVH) is created. 
+                                This method recursively divides the object of interest into a binary search tree of intersecting primitive data (points, lines, triangles, etc.). 
+                                However, ‘Bottom-Up’ approaches also exist that start with the leaf nodes of a BVH and combine into a fully encasing, singular AABB.
+
+                                <span class="image main"><img src="images/AABB/boundingTypes.png" alt="" /></span>
+
+                                The different types of bounding boxes will not be explored in detail in this paper. 
+                                AABB representations are often chosen for their lightweight implementation and simple parameters.
+                                This can increase the efficiency of the computation and improve the feedback rates.
+                                However, AABBs are not as accurate as other types of bounding boxes. So, recursively dividing objects into AABB hierarchies is a popular method to increase accuracy 
+                                while minimizing computation costs.
+
+                                <span class="image main"><img src="images/AABB/boundingVolumeHierarchy.png" alt="" /></span>
+                                N1 is an AABB representation encasing the entire scene. The top-down approach divides each AABB node into two children depending on some defined splitting criteria. 
+                                The result is leaf nodes containing individual primitives. This hierarchy can be used to efficiently calculate the minimum distance between two objects as the node 
+                                contains position information and can be searched through with a Depth First Search (DFS), a \(\text{O}(\log{}n)\) operation, with \(n\) being the number of nodes.
+                            </p>
+
+                            <h3>Algorithm Explanation</h3>
+                            <p>
+                                The pipeline of operation is as follows:
+                                <ol>
+                                    <li>Initialize pygame with OpenGL</li>
+                                    <li>Recursively divide the bunny object into an AABB BVH until some end condition is met.</li>
+                                        <ol style="margin-bottom: 0em;">
+                                            <li type="a">Record AABB definition information, intersecting vertices of the bunny, and the centroid of the AABB</li>
+                                        </ol>
+                                    <li>Update the centroid locations of the AABB BVH from linear translation (user input) or rotation.</li>
+                                    <li>Use a DPS tree traversal algorithm to find the closest centroid in the AABB BVH tree to the point object.</li>
+                                </ol>
+                                Steps 1 and 2 will be completed once upon initialization. Then, the AABB BVH will be linearly transformed with a homogenous transformation matrix in every loop. 
+                                The transformation matrix will more often than not be simply a 4x4 Identity matrix as there is no translation or rotation. 
+                            </p>
+                            <h4>AABB BVH Generation</h4>
+                            <p>
+                                The top-down AABB BVH algorithm starts with the scene defining the bunny. This is classified as two points characterizing the rectangular prism.
+                                <!-- <br/><br/> -->
+
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/cuboidShape.png" alt="" /></span></div>
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                </div>
+                                Above, a rectangular prism is identified with 8 vertices. To characterize the entire cube, only a diagonal set of points is needed, 
+                                such as H and B. Then, about the global coordinate system, points E, F, G, D, A, & C can be generated. Next, the longest axis is identified. 
+                                The longest axis is the line with the largest magnitude. In the above figure, this would be line EF, AB, HG, or DC. This line was calculated in code by taking the 
+                                absolute value of the subtraction between points E and F. Note the direction as the lines should point towards the positive axis as a convention. 
+                                In layman's terms, point E positively travels across the Y axis to point F, and so on. This rule is critical for expanding the AABB generation to other axes and 3D objects. 
+                                <br/><br/>
+                                With the longest axis identified, a cost function can be applied to find the most optimal splitting position along the line. 
+                                The cost function is defined as  
+                                $$f_{cost}(x)=C_L(x)\frac{SA_L(x)}{SA} + C_R(x)\frac{SA_R(x)}{SA}$$
+                                Where the variable's definitions can be summarized in the following table.    
+
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Variable</th>
+                                                <th>Definition</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>\(x\)</td>
+                                                <td>Dependent variable (Slider).</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td>\(C_L\)</td>
+                                                <td>Number of primitives (vertices) intersecting
+                                                    in the proposed “left” child.</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td>\(C_R\)</td>
+                                                <td> Number of primitives (vertices) intersecting
+                                                    in the proposed “right” child.</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td>\(SA\)</td>
+                                                <td>Surface Area of parent AABB.</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td>\(SA_L\)</td>
+                                                <td>Surface Area of proposed “left” AABB.</td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <td>\(SA_R\)</td>
+                                                <td>Surface Area of proposed “right” AABB.</td>
+                                                
+                                            </tr>
+                                        </tbody>
+                                        <!-- <tfoot>
+                                            <tr>
+                                                <td colspan="1"></td>
+                                                
+                                            </tr>
+                                        </tfoot> -->
+                                    </table>
+                                </div>
+
+                                The above Table identifies a left and right child node. For the global coordinate system and identified longest axis, the left child will always 
+                                be the ‘more negative’ AABB structure, while the right child will always be the ‘more positive’ AABB structure. This is to ensure proper tree generation and consistent formulation.
+                                
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/bunnySlicingGraph.png" alt="" /></span></div>
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                </div>
+                            
+                                The above figure demonstrates that the minimum location on the cost function corresponds to the location along the longest axis where the parent AABB node should be split into children.
+                            </p>
+
+                            <h3>Results</h3>
+                            <p>
+                                The first test of accuracy was to predefine the maximum level for the AABB BVH tree to reach and plot the resulting AABBs. The figure below demonstrates various end conditions.
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/bunnyResults.png" alt="" /></span></div>
+                                        <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                    <div style="text-align: center;"><p>AABB BVH Visualized around Stanford Bunny with 0 (top left), 1 (top right), 2 (bottom left), and 7 (bottom right) Levels to the Tree</p></div>
+                                </div>
+
+                                Referencing the top right split generating for two children AABBs, the above figure gives promising results to the accuracy of these findings. 
+                                Moreso, the splitting begins to focus AABB around the edges of the model. This is the intended result as the smallest AABBs, the leaf nodes, should represent 
+                                the highest accuracy (geometrically most complex region) of the model. The edges of the model contain the most information needed to be captured by a higher resolution of AABBs. 
+                                For example, the bottom right image with a depth of 7 has no AABBs generated in the top right region. There are no children nodes in this region because there are not any 
+                                intersecting vertices from the bunny, maximizing the cost function.
+
+
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <!-- <div class="col-"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/bunnyTranslation.png" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/AABB/bunnyRotation.png" alt="" /></span></div>
+                                        <!-- <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                    </div>
+                                    <div style="text-align: center;"><p>Bunny and AABB BVH Translation (Left) and Rotation (Right)</p></div>
+                                </div>
+                                
+                                The algorithm creates the AABB BVH tree hierarchy once and is translated with the bunny as a part of OpenGL glTranslatef() or 
+                                rotated with glRotatef(). It is essential to understand that OpenGL cannot return the coordinates of what has been drawn. 
+                                Translations and rotations can be applied but centroid information cannot be extracted explicitly. 
+                                So, global coordinate information must be tracked independently of OpenGL. This was accomplished by applying the same translations and rotations
+                                 on every centroid position of an AABB node through homogenous transformation matrix updates. This becomes a bottleneck for large trees. 
+                                 A possible solution could be to only update the centroid information of the leaf nodes of the AABB BVH tree or update each layer’s centroid information in a parallel process. 
+                                <br/><br/>
+                                The minimum distance calculated in printed to the terminal. The point used was the origin (0,0,0) for simplicity, 
+                                although this value can be coded to be anything. This point also is not visualized in OpenGL due to time constraints. 
+                                The minimum distance is calculated after every centroid has been updated due to the applied rotation or translation and thus happens once per frame. 
+                                In practice, the average refresh speed of this algorithm is quite slow, averaging around 20 Hz. The refresh speed is dependent on the number depth of the tree created, as well. 
+                             </p>
+
+                        
+                        </div>
+					</div>
+
+				<!-- Footer -->
+                <footer id="footer">
+                    <div class="inner">
+                        <section>
+                            <h2>Get in touch</h2>
+                            <a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+                            <br/>
+                            <a href = "tel:4015884598">+1 (401) 588-4598</a>
+                            <br/>
+                            <a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+                        </section>
+                        <ul class="copyright">
+                            <!-- <li>&copy; Untitled. All rights reserved</li> -->
+                            <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                        </ul>
+                    </div>
+                </footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+            <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+            <script id="MathJax-script" async
+                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+            </script>
+
+	</body>
+</html>

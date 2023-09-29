@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>PCL_Segmentation</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+                            <h1 style="margin-bottom: 0.1em;">Vision-Based Manipulation and PCL Segementation</h1>
+
+							<p class="button" style="margin: 0.1em;">Panda Arm</p>
+                            <p class="button" style="margin: 0.1em;">PCL</p>
+                            <p class="button" style="margin: 0.1em;">Voxel Stitching</p>
+							<p class="button" style="margin: 0.1em;">MoveIt</p>
+							<p class="button" style="margin: 0.1em;">ROS</p>
+							<p class="button" style="margin: 0.1em;">Gazebo</p>
+							<p class="button" style="margin: 0.1em;">Python</p>
+                            <p class="button" style="margin: 0.1em;">C++</p>
+
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            <p>
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-8"><span class="image fit"><img src="images/PCL/objectsTopView.png" alt="" /></span></div>
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                    <!-- <div style="text-align: center;"><p>Kinematic Phase Diagrams with a Duty Factor of 0.7 (left) and 0.75 (right)</p></div> -->
+                                </div>
+                                This project used the Franka Emika Panda arm in Gazebo to grasp a pudding box, collect voxel data on the environment, and segment the table
+                                from the other objects using Random Sample Consensus (RANSAC). The Panda arm has an Intel Realsense D435 camera in an eye-in-hand configuration
+                                that collects RGBD data on the environment. 
+
+                                <br/><br/>
+
+                                This was a two week long project completed with a team of 2 members.
+                            </p>
+
+							<h2 style="margin-bottom: 1%;">My Contribution</h2>
+							I primarily worked on configuring the simulation environment and MoveIt!. I assisted with the PCL segmentation and stiching voxel snapshots.
+							<br/><br/>
+
+                            <h2>Grasping Pudding</h2>
+                            <div class="box alt">
+                                <div class="row gtr-uniform">
+                                    <!-- <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                    <div class="col-6"><span class="image fit"><img src="images/PCL/graspingPudding.png" alt="" /></span></div>
+                                    <div class="col-6"><span class="image fit"><img src="images/PCL/graspingPuddingLifted.png" alt="" /></span></div>
+                                </div>
+                                <!-- <div style="text-align: center;"><p>Kinematic Phase Diagrams with a Duty Factor of 0.7 (left) and 0.75 (right)</p></div> -->
+                            </div>
+                            <p>Here, the robot arm travels to a hardcoded position, grasps the pudding box, and lifts it. 
+                                To see the lift, compare the relative height of the panda arm to the top pane of Gazebo.
+
+                                <br/><br/> 
+                                A custom Action Server was created with MoveIt! to command the arm to a desired pose. 
+                            </p>
+
+                            <h2>Voxel Representation of RGBD Data</h2>
+                            <div class="box alt">
+                                <div class="row gtr-uniform">
+                                    <div class="col-4"><span class="image fit"><img style="margin-top: 9%;" src="images/PCL/voxelPudding-table.png" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img style="margin-top: 16%;" src="images/PCL/voxelTable.png" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img src="images/PCL/VoxelPudding.png" alt="" /></span></div>
+                                </div>
+                                <br/>
+                                <div style="text-align: center;"><p>Raw Voxel Representation (left), Segmented Table (middle), and Segmented Pudding (right)</p></div>
+                            </div>
+                            <p>Utilizing ROS's ability to create nodes in either C++ or Python, the segmentation portion of code was created in C++. This is due to better
+                                support and documention for the Point Cloud Library in C++.</p>
+
+                            <h2>Stitching Voxel Snapshots</h2>
+                            <p>
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-6"><span class="image fit"><img style="margin-top: 2.5%;" src="images/PCL/multiImageVoxelPuddingStitch-1.png" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/PCL/multiImageVoxelPuddingStitch-2.png" alt="" /></span></div>
+                                    </div>
+                                    <br/>
+                                    <div style="text-align: center;"><p>Stitched Pudding Voxels from the front view (left) and rear view (right)</p></div>
+                                </div>
+
+                                In this image the pudding box is shown from a point cloud that was composed of three different locations. 
+                                This is most evident from the number of edges visible (front, sides, and top). 
+
+                                <br/><br/>
+
+                                The images below showcase the different Panda arm configuraitons where a snapshot of voxel information was taken. 
+
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-4"><span class="image fit"><img style="margin-top: 5%;" src="images/PCL/stitchPose1.png" alt="" /></span></div>
+                                        <div class="col-4"><span class="image fit"><img style="margin-top: 8%;" src="images/PCL/stitchPose2.png" alt="" /></span></div>
+                                        <div class="col-4"><span class="image fit"><img src="images/PCL/stitchPose3.png" alt="" /></span></div>
+                                    </div>
+                                    <br/>
+                                    <div style="text-align: center;"><p>Capturing the backside (left), frontside (middle), and side (right) of the Pudding box.</p></div>
+                                </div>
+                            </p>
+						</div>
+					</div>
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+            <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+	</body>
+</html>

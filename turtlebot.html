@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Frontier Exploration and Pathfinding Turtlebot</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+                            <h1 style="margin-bottom: 0.1em;">Frontier Exploration and Pathfinding Turtlebot</h1>
+
+                            <p class="button" style="margin: 0.1em;">Python</p>
+                            <p class="button" style="margin: 0.1em;">SLAM</p>
+                            <p class="button" style="margin: 0.1em;">Gmapping</p>
+                            <p class="button" style="margin: 0.1em;">ROS</p>
+                            <p class="button" style="margin: 0.1em;">RVIZ</p>
+                            <p class="button" style="margin: 0.1em;">Gazebo</p>
+                            <p class="button" style="margin: 0.1em;">Linux</p>
+							<p class="button" style="margin: 0.1em;">A* Algorithm</p>
+                            <p class="button" style="margin: 0.1em;">Occupancy Grid</p>
+                            <p class="button" style="margin: 0.1em;">PID Control</p>
+
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            A turtlebot, a small non-holonomic driving robot equipped with LiDAR, was simulated in Gazebo and commanded with ROS 
+                            framework to traverse and explore an unknown terrain. Through SLAM and Gmapping, the turtlebot is capable of remembering 
+                            its environment and its location within it. This robotic challenge was divided into three phases and would be simulated with ROS architecture. 
+                            The robot must successfully map/explore an unknown map (1), return to its starting position once done (1), and finally be able to travel to any desired point on the map (3). 
+                            <br/><br/>
+                            <div style="align-content: center; text-align: center; height: 40em;">
+                                <iframe width="100%" height="100%"
+                                    src=https://www.youtube.com/embed/uznw9_DRDhE>
+                                </iframe>
+                            </div>
+                            <br/><br/>
+                            
+                            <h2>My Contribution</h2>
+                            This was a 7-week project with 2 other teammates. In this project, I lead the software design, meetings, and writing. 
+                            I learned the basics of ROS, SLAM & Gmapping, custom ROS message types, CMakeLists, and how to implement different types of algorithms. 
+                            I am extremely fond of this project as it was my first introduction to the behavior of a robot and stepping up to a leadership role. 
+                            Before this, I had only a very small taste of Python, ROS, Gazebo, and algorithms. 
+                            <br/><br/>
+                            
+                            <h2>Design Overview</h2>
+                            Phase 1 is accomplished with the basic outline:
+                                <ol style="margin-left: 2%;">
+                                    <li>Calculate the C-Space of the map.</li>
+                                    <li>Find a frontier to explore.</li>
+                                    <li>Plan the optimal path to the frontier.</li>
+                                    <li>Navigate to the frontier while avoiding obstacles.</li>
+                                    <li>Repeat the above steps until the map is completed.</li>
+                                    <li>Save the completed map.</li>
+                                </ol>
+                            
+                                Phase 2 builds upon the objectives set in Phase 1 by introducing the additional
+                                 requirement for the robot to return to its initial starting point. Moreover, the robot faces the added challenge of navigating through the environment while avoiding obstacles. 
+                                 It can no longer follow an arbitrary path but must choose a safe route. 
+                                <br/><br/>
+
+                                In Phase 3, the complexity escalates as the robot is tasked with reaching a specific "goal" position within the maze. Unlike Phase 1, where the robot dynamically created its map using Gmapping, this time it relies on a static map. 
+                                Furthermore, this goal location may not align with the robot's previous trajectory, meaning it cannot merely retrace its prior steps to achieve its objective. 
+                                <br/><br/>
+
+                            <h2>Breaking up the Problem</h2>
+                            To simplify the path-finding, an Occupancy Grid of 5cm x 5cm squares was used to represent the environment. 
+                            In this scheme, SLAM and Gmapping will mark the appropriate indices with an open space (gray), a wall (black), or an unknown. 
+                            We classify the border of the unknown and known as a frontier. In RVIZ, we highlight these cells are purple. A dilation algorithm was utilized to classify groups of frontiers and 
+                            expand them if desired. We reduce the C-Space (configuration-space) by defining walkable only cells to not bordering known walls by 10 cm. 
+                            This buffer prevents the robot from inadvertently traveling too close to a wall and becoming impaired. Walkable cells are shown in green. 
+
+                            <br/><br/>
+                            An A* algorithm calculates the optimal path between the robot's current position and the most preferable frontier. 
+                            The nodes A* searched are overwritten to be orange. The most interesting frontier is the largest ratio of a group of frontier cells by the distance away it is from the robot. 
+                            Meaning, that a medium-sized frontier close to the robot is more desirable than a small frontier far away. 
+
+                            <br/><br> 
+                            
+                            In this implementation, A* is calculated again once it reaches the frontier goal. 
+                            If the robot determines that the entire map has been explored, then it will automatically return home to satisfy Phase 1 and Phase 2 requirements. 
+
+                            <br/><br/>
+                            Driving the turtlebot was simplified as a P controller to navigate to the next cell in front of the robot. This is very similar to a Rotate-Drive-Rotate algorithm. 
+
+                            <br/><br/>
+                            Phase 3 was simply completed by employing the A* algorithm to find the most optimal path to the desired waypoint from the saved map. Then, the robot navigates to the goal and the challenge is completed.
+                            <br/><br/>
+                            <h3>Additional Media</h3>
+                            
+                            <div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/Turtlebot/dilation_algo.png" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img style="margin-top: 35%;" src="images/Turtlebot/nodes_diagram.png" alt="" /></span></div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+                        <div class="inner">
+                            <section>
+                                <h2>Get in touch</h2>
+                                <a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+                                <br/>
+                                <a href = "tel:4015884598">+1 (401) 588-4598</a>
+                                <br/>
+                                <a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+    
+                            </section>
+                            <ul class="copyright">
+                                <!-- <li>&copy; Untitled. All rights reserved</li> -->
+                                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                            </ul>
+                        </div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script id="MathJax-script" async
+			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+	</script>
+
+	</body>
+</html>

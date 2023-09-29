@@ -1,0 +1,182 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Quadruped</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1 style="margin-bottom: 0.1em;">Custom Symmetric Walking Quadruped</h1>
+								
+							<p class="button" style="margin: 0.1em;">Legged Robotics</p>
+							<p class="button" style="margin: 0.1em;">Closed-Loop Control</p>
+							<p class="button" style="margin: 0.1em;">ROS</p>
+							<p class="button" style="margin: 0.1em;">Gazebo</p>
+							<p class="button" style="margin: 0.1em;">Python</p>
+							<p class="button" style="margin: 0.1em;">Inverse Kinematics</p>
+                            <p class="button" style="margin: 0.1em;">Forward Kinematics</p>
+                            <p class="button" style="margin: 0.1em;">3D Printing</p>
+
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            <p>
+                                <div style="align-content: center; text-align: center;">
+                                    <video width="100%" controls="controls">
+                                        <source src="images/Quadruped/RBE 521 Final Project.mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    Note: Video is 4x Speed
+                                </div>
+                                Quadruped walking robots draw inspiration from various mammals and insects, incorporating bio-inspired mechanisms that improve both 
+                                stability and the range of movement. This, in turn, expands their capability to access diverse terrains. 
+                                However, these advancements demand heightened precision in path planning and kinematic calculations.
+
+                                <br/><br/>
+                                The objective of this project is to create a model and simulation for the motion of a symmetrical quadruped walking robot, 
+                                complete with shoulder, elbow, and knee joints. This objective is achieved by solving both forward and inverse kinematics for the 
+                                model while exploring different gait patterns.
+                            </p>
+                            
+                            <h3>Kinematic Calculations</h3>
+                            <p>
+                                The initiation of the robot's kinematics involved the essential step of defining the duty factor. 
+                                This entailed the development of kinematic phase diagrams for a quadruped robot employing a symmetric forward walking gait 
+                                while varying the duty factors. During the analysis of these diagrams, we scrutinized whether any of the leg's transfer phases 
+                                coincided with one another. Such overlap would result in the situation where two or more legs are simultaneously lifted off the ground, 
+                                a scenario that could greatly heighten instability, especially for a quadruped robot.
+
+                                <br/><br/>
+                                Upon examination, it was determined that when employing a duty factor of 0.7, there was a brief 1/10th phase overlap in the transfer
+                                phase between legs two and three. However, by increasing the duty factor to 0.75, none of the transfer phases showed any overlap. 
+                                With this adjustment, as soon as one leg made contact with the ground, the subsequent leg began to lift off, ensuring a smooth and 
+                                continuous motion. As a result, a duty factor of 0.75, coupled with a symmetric forward walking gait, was chosen as the optimal 
+                                configuration for this project.
+
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <!-- <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                        <div class="col-6"><span class="image fit"><img src="images/Quadruped/KinPhase7.PNG" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images\Quadruped\KinPhase75.PNG" alt="" /></span></div>
+                                    </div>
+
+                                    <div style="text-align: center;"><p>Kinematic Phase Diagrams with a Duty Factor of 0.7 (left) and 0.75 (right)</p></div>
+                                </div>
+
+                                Trajectory planning of the foot tip is broken down into six points to form the path of the foot. The spacing of the points was determined by the
+                                input velocity, stride length, and cycle period. These points in relation to the ground coordinate system so a mapping is completed to 
+                                have these points with respect to the robot's body coordinate system. Inverse kinematics are then calculated to obtain the necessary joint angles by
+                                considering each leg as individual robot arms with three joints (the hip, knee, and ankle). 
+
+                                <br/><br/> 
+                                The calcualted angles to reach the desired 6 waypoints are then relayed into ROS publishers at a specific time. We loop this 10 times to have the 
+                                robot walk straight for 10 cycles.  
+                            </p>
+
+                            <h3>Real Life Model</h3>
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <!-- <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                        <div class="col-6" style="padding-top: 7.5%;"><span class="image fit"><img src="images/Quadruped/exprobot1.PNG" alt="" /></span></div>
+                                        <div class="col-6"><span class="image fit"><img src="images/Quadruped/exprobot2.PNG" alt="" /></span></div>
+                                    </div>
+
+                                    <div style="text-align: center;"><p>3D Printed Model with RaspberryPi, PCA9685 motor controller, and servo motors</p></div>
+                                </div>
+
+                            <h3>Additional Media</h3>
+                            <div class="box alt">
+                                <div class="row gtr-uniform">
+                                    <!-- <div class="col-3"><span class="image fit"><img src="" alt="" /></span></div> -->
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/cadpic1.PNG" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/cadpic2.PNG" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/cadpic3.PNG" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/MathModelSide.png" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/MathModelTop.png" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/rvizaxes.PNG" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/rvizmodel.PNG" alt="" /></span></div>
+                                    <div class="col-3"><span class="image fit"><img src="images/Quadruped/quadruped_img.jpg" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img src="images/Quadruped/gazebostart.PNG" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img src="images/Quadruped/gazebomid.PNG" alt="" /></span></div>
+                                    <div class="col-4"><span class="image fit"><img src="images/Quadruped/gazebofinish.PNG" alt="" /></span></div>
+                                </div>
+                            </div>
+                        </div>
+					</div>
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+            <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+            <script id="MathJax-script" async
+                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+            </script>
+
+	</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Masters Research</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Holistic Hybrid Mobile Manipulator Control</h1>
+							<!-- <span class="image main"><img src="images/pic13.jpg" alt="" /></span> -->
+							<p>This letter details the design of a reactive hybrid mobile manipulator based on the implementation of 
+								<a href="modular_mobile_manipulator.html">Design and Implementation of a Mobile Manipulator MQP.</a>
+								This work is heavily based on <a href="https://arxiv.org/abs/2109.04749">A Holistic Approach to Reactive Mobile Manipulation by Haviland et al.</a>
+								Their approach to treating the mobile base and robot arm as a single system in a motion controller enabled smooth/graceful motion that achieves a desired end effector pose and avoids joint position/velocity limits 
+								while maximizing <a href="https://doi.org/10.1177/02783649850040020"> Yoshikawa's Manipulability index.</a>
+								This project expands their work by incorporating three additional degrees of freedom (DoFs) in a parallel manipulator elevator between 
+								the mobile base and the robotic arm to create a 12-DoF system. We demonstrate and compare various implementation methods to incorporate the elevator through simulation in ROS1/ Gazebo. 
+								Additionally, we discuss the homogenous Power Manipulability as a promising alternative manipulability index to restructure the motion controller algorithm.</p>
+							
+							<h2>Holistic Control Demos</h2>
+							<center>
+								<video width="100%" controls="controls">
+									<source src="images/MS/Capstone Video Demos.mp4">
+									Your browser does not support the video tag.
+								</video>
+								<a href="https://youtu.be/WngMKqCbG34">https://youtu.be/WngMKqCbG34</a>
+							</center>
+
+							<p>Brief explanation here TODO</p>
+							
+							<h2>What is a Mobile Manipulator?</h2>
+							<p>A Mobile Manipulator can be defined as a robot arm (a manipulator) attached to a mobile base. 
+								These systems are usually extremely redudent by having many Degrees of Freedom (DOFs). 
+								Our system has 12/13 DOFs depending on the desired configuration.</p>
+								
+							<p>A Mobile Manipulator is a highly valuable asset to researchers and manufacturers. 
+								A traditional robot arm is constrained to a workspace limited by joint limits, link lengths, and self collision. 
+								A Mobile Manipulator allows this workspace to travel which enables significantly more possibilties such as long distance pick and place, rescue operations, bomb defusing, etc.</p>
+							
+
+							<h2>Holistic Control</h2>
+							<p>With a Mobile Manipulator system it became imperative to find a method to control the system to achieve basic goals such as pick and place. 
+								We simulate the mobile robot to ensure the controller will not produce motion that could damage the robot arms in the real world. </p>
+
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-8"><span class="image fit"><img src="images/MS/exploded_dof_serial.png" alt="" /></span></div>
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
+								</div>
+							</div>
+							<p>This simulation is based heavily off Holistic Mobile Manipulation, developed by Jesse Haviland, Niko Sünderhauf, and Peter Corke. 
+							We extend their research through additional redudency in a 3 degree of freedom (DOF) parallel manipulator elevator. 
+							We simplify the elevator as a serial linkage consisting of a prismatic joint and two revolute joints.</p>
+
+							<h2>Control Derivation</h2>
+
+							<p>A Quadratic Program (QP) has the form</p>
+							<!--QP Definition-->
+                            <p>$$\begin{alignat}{3} 
+								\underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Px + q^\top{}x \\
+								\text{subject to$:$}             &\quad& Gx &\le h \\
+																 &\quad& Ax &= b  
+							\end{alignat}$$</p>
+							<p>Where  \(x\) is the optimization variable, \(f_0(x)\) is the optimization cost function, and the subject to equations are constraints put on the cost function.
+								For the cost function to have a global minimum, matrix \(P\) must be positive definite. It is desirable to turn a QP into some form that a serial robot arm
+								can utilize. 
+							</p>
+							<h3>Manipulator Kinematics Refresher</h3>
+							<p>I will not be going into significant detail regarding the derivation of joint space and task space for manipulators as there is a wealth of information online
+								detailing this process. For now, we assume there is a function \(F(q)\) that can map the joint space parameters to task space \(P\). We write this relationship as:
+								$$P=F(q)$$
+								Where \(P\) is the end effector location in task space, and \(q\) are the joint angles of the manipulator arm. This relationship can be expanded by taking the time derivative.
+								$$\frac{\text{d}P}{\text{d}t}=\frac{\text{d}F(q)}{\text{d}t} \Longrightarrow v = J(q)\dot{q}$$
+								Where \(v\) is what's known as the Spatial Velocity. Using this relationship, we are able to determine the linear and angular velocites of the end effector knowing only the
+								current joint angles, the current joint angular velocities, and the linkage lengths. We can now make a Resolved Rate Motion Controller by introducing the idea of error- where the end 
+								effector currently is compared against where we want it to be. 
+								$$e(q) = P^*-P(q)$$
+								Here, \(P^*\) is the desired task space end effector pose and \(P\) is the current pose. Now, if we reorganize our Spacial Velocity equation to solve for angular joint velocites, the 
+								equation becomes \(\dot{q} = J^\top{}v\). Let's enable error to be a factor by making \(v\) proportional to \(e\). This will cause the robot arm to be pulled in the direction of 
+								desired pose. It's velocity will decay as it approaches the goal. </p>
+								<!-- <br/><br/> -->
+							<h3>RRMC into QP</h3>
+							<p>
+							Taking the idea of the RRMC, we can get the exact same result by reorganizing it into a QP. 
+							<!--RRMC as QP-->
+							$$\begin{alignat}{3} 
+								\underset{\dot{q}}{\text{minimize$:$}} &\quad& f_0(\dot{q}) &= \frac{1}{2}\dot{q}^\top{}1_n\dot{q} \\
+								\text{subject to$:$}             &\quad& J(q)\dot{q} &= v \\
+																	&\quad& \dot{q}^- &\le \dot{q} \le \dot{q}^+  
+							\end{alignat}$$
+							
+							</p>
+							
+							<h3>Introduction of Manipulability</h3>
+							<p></p>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-8"><span class="image fit"><img src="images/MS/manipulability-gif.gif" alt="" /></span></div>
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
+								</div>
+							</div>
+
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-8"><span class="image fit"><img src="images/MS/manipulability.png" alt="" /></span></div>
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
+								</div>
+							</div>
+
+							
+
+                            <!--Manipulability metric-->
+                            <p>\[m(q)=\sqrt{\det({\hat{J}(q)\hat{J}(q)^\top{}})}\]</p>
+
+                            
+                            
+                            <!--Resolved Rate Motion Controller-->
+                            <p>$$\begin{aligned} v &= J\dot{q}
+                                \\ \dot{q} &= J^\top{}v
+                                \\ v &\propto e
+                                \\ e &= p^*-p\end{aligned}$$</p>
+
+                            
+
+                            <!--Holistic Controller Eqn-->
+                            <p>$$\begin{alignat}{3} 
+                                \underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
+                                \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
+                                                                 &\quad& Ax &\le B  \\
+                                                                 &\quad& X^- &\le x \le X^+
+                            \end{alignat}$$</p>
+
+                            <!--Holistic Controller Equation Variables-->
+                            <p>$$\begin{aligned}  
+								\mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
+								\mathcal{J}(q) = \begin{bmatrix} \begin{smallmatrix} b \\ \space\end{smallmatrix}J_e(q) & 1_{6x6} \end{bmatrix} \\
+								\begin{smallmatrix} b \\ \space\end{smallmatrix}v_e(t) = \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e^*(t)-\delta{}(t) \\
+
+								X^- = \begin{bmatrix} \dot{q}^- \\ \delta{}^- \end{bmatrix} \\
+								X^+ = \begin{bmatrix} \dot{q}^+ \\ \delta{}^+ \end{bmatrix} \\
+								x = \begin{bmatrix} \dot{q} \\ \delta{} \end{bmatrix} \\
+
+								A = \begin{bmatrix} A_b \\ A_{elev_p} \\ A_{elev_r} \\ A_a \\ 1_6 \end{bmatrix} = \begin{bmatrix} \pm{}1_{nxn+6}\end{bmatrix} \\
+								B = \begin{bmatrix} 0_b \\ B_{elev_p} \\ B_{elev_r} \\ B_a \end{bmatrix} \\
+								
+								B_{elev_{p,r}},B_a = \begin{bmatrix} \frac{q_{elev_{p,r},a} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}} \\
+														\vdots{} \\
+														\frac{q_{n} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}}
+														\end{bmatrix} \\
+
+								Q = \begin{bmatrix} diag(\lambda{}_b) & \space & \space & 0_{(n+6)x(n+6)} \\
+													\space & diag(\lambda{}_{elev}) & \space & \space \\
+													\space & \space & diag(k_a) \space \\
+													0_{(n+6)x(n+6)} & \space & \space & diag(\lambda{}_\delta{})							
+													\end{bmatrix} \\
+
+								k_a = \text{constant} \\
+								\lambda{}_{elev} = \begin{pmatrix} \frac{1}{||e||} & k_{elev_r}\end{pmatrix} \\
+								\lambda{}_b,\lambda{}_\delta = \frac{1}{||e||} \\
+
+								C = \begin{bmatrix} 
+									J_m + \epsilon \\ 0_{6x1}
+									\end{bmatrix} \\
+								J_m = \begin{bmatrix} 
+									0_b \\ J_{m,a}^\top{}
+									\end{bmatrix} \\
+								\epsilon = \begin{bmatrix} -k_\epsilon\theta_\epsilon \\
+									0_{n-1}								
+									\end{bmatrix} \\
+
+								\dot{m} = J_m^\top{}(q)\dot{q} \Longleftrightarrow v=J(q)\dot{q} \\
+
+								J_m^\top{} = m \begin{bmatrix} 
+												vec(J(q)H_1(q)^\top{})^\top{}vec(J(q)J(q)^\top{})^{-1} \\
+												vec(J(q)H_2(q)^\top{})^\top{}vec(J(q)J(q)^\top{})^{-1} \\
+												\vdots{} \\
+												vec(J(q)H_n(q)^\top{})^\top{}vec(J(q)J(q)^\top{})^{-1} \\
+								\end{bmatrix} \\
+
+								\dot{J} = \frac{\text{d}J(q)}{\text{d}t} = H(q)\dot{q}
+
+
+
+
+								\end{aligned}$$</p>
+
+                            <!--aligned math exasmple-->
+                            <p>$$\begin{aligned} 2x - 4 &= 6 \\ 2x &= 10 \\ x &= 5 \end{aligned}$$</p>
+
+							<h2>Other Media</h2>
+
+						</div>
+					</div>
+
+				<!-- Footer -->
+                <footer id="footer">
+                    <div class="inner">
+                        <section>
+                            <h2>Get in touch</h2>
+                            <a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+                            <br/>
+                            <a href = "tel:4015884598">+1 (401) 588-4598</a>
+                            <br/>
+                            <a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+                        </section>
+                        <ul class="copyright">
+                            <!-- <li>&copy; Untitled. All rights reserved</li> -->
+                            <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                        </ul>
+                    </div>
+                </footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+            <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+            <script id="MathJax-script" async
+                    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+	</body>
+</html>
+
+<!--Math bits example https://jsbin.com/?html,output
+Samples: https://www.mathjax.org/#samples
+-->

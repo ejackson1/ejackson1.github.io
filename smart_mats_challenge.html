@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Smart Materials Robotics Challenge</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">E-Portfolio</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+                            <h1 style="margin-bottom: 0.1em;">Smart Materials Robotics Challenge</h1>
+
+							<p class="button" style="margin: 0.1em;">Multi-material</p>
+                            <p class="button" style="margin: 0.1em;">Multi-gait</p>
+                            <p class="button" style="margin: 0.1em;">Shape-memory alloy</p>
+							<p class="button" style="margin: 0.1em;">Soft robot</p>
+                            
+                            <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
+                            <p>
+                                This challenge was designed for teams to develop a soft robot that could successfully navigate a 5-stage course consisting of a fall, crawl, 
+								walk, swim, and climb. Robots do not need to be entirely soft so long as some soft or smart material is an integral part of the design. 
+								<br/><br/>
+								Our team designed a multi-material soft robot, Xander, to be actuated with pneumatic networks (pnue-nets) and shape memory alloys (SMAs). 
+								I worked particularly on designing a cheap mechanism to enable Xander to fall in a repeatable and reliable way without sustaining major damage. 
+								<br/><br/>
+								This was a 4-person project that spanned 14 weeks. 
+
+                            </p>
+
+							<h2>Video Demonstration</h2>
+							<p>
+								<div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-8"><span class="image fit"><img src="images/SmartMats/xander_climb.gif" alt="" /></span></div>
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+									<div style="text-align: center;"><p>16x Speed. Xander crawling up a 15-degree slope coated with Teflon without pneu-net additions</p></div>
+								</div>
+							</p>
+
+							<h2>My Contribution</h2>
+							I primarily worked on creating a robust conveyor belt to launch Xander off the fall in a repeatable and robust manner. 
+							The intent was to have Xander fall in a favorable orientation consistently. I also assisted with the creation and experimentation of Xander. 
+							<br/><br/>
+
+                            <h2>Challenge Course</h2>
+                            <p>
+                                <div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-10"><span class="image fit"><img src="images/SmartMats/course.png" alt="" /></span></div>
+                                        <div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                </div>
+
+							<h2>Soft Robot Design</h2>
+							<p>
+								<div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-8"><span class="image fit"><img src="images/SmartMats/xander_drawing.png" alt="" /></span></div>
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+                                </div>
+								
+							</p>
+							The system is comprised of two distinct materials: an extensible layer positioned at the top and an inextensible layer situated beneath it. 
+							This arrangement serves the purpose of constraining the bottom layer while allowing the top layer to expand and contract, resulting in a bending motion when the 
+							extensible layer is inflated. This design concept is detailed in <a href="https://www.pnas.org/doi/10.1073/pnas.1116564108">Shepherd's work on multi-gait systems from 2011</a>. 
+
+							<br/><br/>
+							Xander utilized pneu-nets to actuate its limbs. Xander was created with 3D-printed molds. 
+
+							<br/><br/>
+
+							<h2>SMA Addition</h2>
+							<p>
+								To allow Xander's arms to contract upwards, shape memory alloys (SMAs) were placed on the top side of the pneu-nets. 
+								With an electrical current supplied to the SMA's, they would contract to pull the arms upwards. We wanted to use this motion so Xander could climb up small obstacles.
+								<div class="box alt">
+                                    <div class="row gtr-uniform">
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                        <div class="col-8"><span class="image fit"><img src="images/SmartMats/fig_xander_actuations.png" alt="" /></span></div>
+                                        <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+                                    </div>
+									<div style="text-align: center;"><p>A: SMAs not turned on and pneu-nets not powered. B: Backside pneu-nets activated. C: Whole body pneu-nets activated, some SMA resistance to contraction. D: SMAs activated and pneu-nets turned off.
+									</p></div>
+                                </div>
+							</p>
+							SMAs exhibit a remarkable property wherein they can revert to a predetermined shape after undergoing deformation. 
+							In their martensite state, SMAs can be freely manipulated and deformed. However, when heated to their austenite finish temperature \(A_f\), 
+							they transform and assume their pre-programmed austenite configuration. 
+							Beyond the \(A_f\) temperature, at higher temperatures, the alloy displays superelastic behavior. This means that it swiftly returns to its original,
+							 undeformed shape as soon as the deforming force is removed.  <br/><br/>
+
+							<h2>Convery Belt</h2>
+							The conveyor belt was specifically engineered to manage the robot's descent during its interaction with the fall obstacle. 
+							The primary objective of this design was to execute a controlled flip of the robot while it descended, ensuring that it consistently landed upright and 
+							facing forward. This concept drew inspiration from the  <a href="https://www.sciencefocus.com/science/why-does-toast-often-land-butter-side-down">"Buttered Toast Phenomenon"</a>. 
+							<br/><br/>
+
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<!-- <div class="col-2"><span class="image fit"><img src="" alt="" /></span></div> -->
+									<div class="col-6"><span class="image fit"><img src="images/SmartMats/conveyerbelt.png" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img style="margin-top: 5%;" src="images/SmartMats/finalDropGif.gif" alt="" /></span></div>
+								</div>
+							</div>
+							To materialize this idea, the chassis was fabricated using 3D printing technology, utilizing polylactic acid (PLA) as the chosen material. 
+							The conveyor belts were constructed from thermoplastic polyurethane (TPU), and the entire system was actuated by a common DC motor, selected for its suitable electro-mechanical properties. 
+							<br/><br/>
+						
+							<h2>Additional Media</h2>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/SmartMats/Final_Slippery_Slope_SMAs.gif" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/SmartMats/Final_Angled_Climb.gif" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/SmartMats/Final_Swim(1).gif" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/SmartMats/Final_Steep_Slope.gif" alt="" /></span></div>
+								</div>
+							</div>
+						
+						
+						</div>
+					</div>
+
+				<!-- Footer -->
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script id="MathJax-script" async
+			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+	</script>
+
+	</body>
+</html>
