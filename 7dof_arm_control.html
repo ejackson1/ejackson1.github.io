@@ -62,66 +62,57 @@
                             <p class="button" style="margin: 0.1em;">Product of Exponentials</p>
                             
                             <h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
-                            <p>
-                                Three different controller
-                                methods are implemented on ROS/Gazebo using the KINOVA Kortex library; MoveIt, Trajectory based and
-                                purely position based control. The Inverse Kinematics algorithm used is tested for different end-effector
-                                configurations. Each method is tested by a teleoperation mode, and the results of each method are compared
-                                and analyzed. The goal of this project is to develop a position-based controller for the robotic arm. 
+                            <p> 
 
-                                
-
+                                This project was designed for the RBE501 course offered at Worcester Polytechnic Institute. 
+								We designed a position controller for the Kortex Kinova Gen3 arm using teleop inputs. 
+								This code was tested using the 7DOF arm configuration. 6DOF will require the screw axes to be adjusted accordingly. The github link can be found <a href="https://github.com/ejackson1/RBE501">here.</a>
+								
+								<br/><br/>
+								There are three types of controllers used in this package; moveit, trajectory, and pure position based controllers. 
+								Each works through a teleop through keyboard inputs. The teleop works through determining the end effector position from selecting either a positional update
+								(translating across the xyz plane) or with orientation (roll pitch yaw).
+								<br/><br/>
+								To move positionally, select either i, j, or k to determine an axis to translate across. 
+								Then, select either t or b to determine a positive or negative multiplier. 
+								Pressing q or e will move the arm in the selected direction by either 10 or 1 cm, respecively. 
+								The default resolution is 10 cm. To move with a selected roll pitch or yaw, press r, p, or y. 
+								The default angle will be 1 degree. Select w or x to change the resolution to 1 degree of 15 degrees, respectively. Additionally, the t/b multiplier also applies here.
                                 <!-- <br/><br/>
                                 There are three types of controllers used in this package; moveit, trajectory, and pure position based controllers. 
                                 Each works through a teleop through keyboard inputs. The teleop works through determining the end effector position from selecting either 
                                 a positional update (translating across the xyz plane) or with orientation (roll pitch yaw). -->
 
-
                             </p>
+							<h2>My Contribution</h2>
+							<p>
+								In this project, I was the lead developer and organizer. I derived the screw axes, product of exponentials, and setup the environment for the Kinova Gen3 arm in ROS/Gazebo. 
+							</p>
+
+							<!-- <h2>Additional Media</h2> -->
 
 						</div>
 					</div>
 
 				<!-- Footer -->
-					<footer id="footer">
-						<div class="inner">
-							<section>
-								<h2>Get in touch</h2>
-								<form method="post" action="#">
-									<div class="fields">
-										<div class="field half">
-											<input type="text" name="name" id="name" placeholder="Name" />
-										</div>
-										<div class="field half">
-											<input type="email" name="email" id="email" placeholder="Email" />
-										</div>
-										<div class="field">
-											<textarea name="message" id="message" placeholder="Message"></textarea>
-										</div>
-									</div>
-									<ul class="actions">
-										<li><input type="submit" value="Send" class="primary" /></li>
-									</ul>
-								</form>
-							</section>
-							<section>
-								<h2>Follow</h2>
-								<ul class="icons">
-									<li><a href="#" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-facebook-f"><span class="label">Facebook</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-instagram"><span class="label">Instagram</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-dribbble"><span class="label">Dribbble</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
-									<li><a href="#" class="icon brands style2 fa-500px"><span class="label">500px</span></a></li>
-									<li><a href="#" class="icon solid style2 fa-phone"><span class="label">Phone</span></a></li>
-									<li><a href="#" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
-								</ul>
-							</section>
-							<ul class="copyright">
-								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-							</ul>
-						</div>
-					</footer>
+				<footer id="footer">
+					<div class="inner">
+						<section>
+							<h2>Get in touch</h2>
+							<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+							<br/>
+							<a href = "tel:4015884598">+1 (401) 588-4598</a>
+							<br/>
+							<a href = "https://www.linkedin.com/in/edward-jackson1/">LinkedIn</a>
+
+						</section>
+						<ul class="copyright">
+							<!-- <li>&copy; Untitled. All rights reserved</li> -->
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                            
+						</ul>
+					</div>
+				</footer>
 
 			</div>
 

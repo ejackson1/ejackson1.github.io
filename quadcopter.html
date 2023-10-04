@@ -97,22 +97,41 @@
 									<li>P3 = (1,1,1) to P4 = (0,1,1) in 15 seconds</li>
 									<li>P4 = (0,1,1) to P5 = (0,0,1) in 15 seconds</li>
 								</ul>
-								Where each waypoint (Px) is defined by the world coordinate frame in XYZ order. It’s important to note that between each traversal, the quadcopter will only be moving down one axis.
+								Where each waypoint (Px) is defined by the world coordinate frame in XYZ order. It’s important to note that between each traversal, the quadcopter will only be moving down one axis. However, 
+								this was a requirement of the project and is not a limitation of the controller. Indeed, the sliding mode controller is capable of trajectory following complex paths.
 								
 								<br/><br/>
 
-								A MATLAB function generated quintic polynomials for the desired position, velocity and acceleration of the Crazyflie 2.0 at any given time. 
-								Between each of the given desired setpoints, only one of the xyz coordinates changed. 
-								Due to this characteristic the trajectory generation for the 3D flight path was heavily simplified. 
-								The trajectory between two coordinates that stayed the same was simply the value of that coordinate, while the trajectory of the changing coordinate could be 
-								calculated using a one dimensional quintic polynomial generator. In MATLAB, the function takes in the start and end values for time, position, velocity, and 
-								acceleration. The function creates a fifth and fourth order function from both the initial time and the final time, resulting in a 4 equation system.
+								A MATLAB function generated quintic polynomials for the desired position, velocity and acceleration of the Crazyflie 2.0 at any given time between waypoints. 
+								The quintic polynomial function was defined as follows:
+
+								$$\begin{alignat}{1} 
+									\begin{bmatrix}
+									1 & t_0 & t_0^2 & t_0^3 & t_0^4 & t_0^5 \\
+									0 & 1 & 2t_0 & 3t_0^2 & 4t_0^3 & 5t_0^4 \\
+									0 & 0 & 2 & 6t_0 & 12t_0^2 & 20t_0^3 \\ 
+									1 & t_f & t_f^2 & t_f^3 & t_f^4 & t_f^5 \\
+									0 & 1 & 2t_f & 3t_f^2 & 4t_f^3 & 5t_f^4 \\
+									0 & 0 & 2 & 6t_f & 12t_f^2 & 20t_f^3
+									\end{bmatrix}
+									\begin{bmatrix}
+										a_0 \\ a_1 \\ a_2 \\ a_3 \\ a_4 \\ a_5 \\
+									\end{bmatrix}
+									=
+									\begin{bmatrix}
+										q_0 \\ \dot{q_0} \\ \ddot{q_0} \\ q_f \\ \dot{q_f} \\ \ddot{q_f} \\
+									\end{bmatrix}
+
+								\end{alignat}$$
+
+								Here, \(t_0\) and \(t_f\) are the starting and stopping times to traverse from waypoint A to waypoint B. \(q_0\) and \(q_f\) are the starting and stopping positions. The first and second time derivatives
+								of \(q_0\) and \(q_f\) are the starting and stopping velocity and acceleration. Using the desired waypoints, we can manipulate the above relationship to calculate the coefficients of the desired
+								trajectory polynomial. 
 								
-								By solving the system of equations for the symbolic variables, the coefficients for the quintic trajectory were found.
 								
 								<br/><br/>
 								The path between each of the five setpoints was calculated using this method and stitched together to create a piecewise function for the overall position of 
-								the quadcopter at any given time. The desired velocity and acceleration was found by simply taking the derivative of the position equation with respect to time. 
+								the quadcopter at any given time.  
 								The graphs for the desired position, velocity, and acceleration can be seen below in below figure. 
 								<!-- The calculated desired trajectory equations were then inserted into the main python script to get the desired trajectory values as the quadcopter was controlled. -->
 
@@ -160,8 +179,7 @@
 									</div>
 									<div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div>
 								</div>
-								The quadcopter has 6 degrees of freedom (DoFs) which results in 6 equations of motion. X,Y, and Z are the world coordinate positions of the quadcopter while Φ, θ, and Ψ are the roll, 
-								pitch, and yaw. The equations of motion are the second derivative of the position and roll, pitch, yaw. 
+								The quadcopter has 6 degrees of freedom (DoFs) which results in 6 equations of motion. 
 								<br/><br/>
 								Only 4 equations of motions are utilized as there are only 4 control inputs (4 motors). For quadcopters, it is common to design a controller for 
 								the altitude and attitude only (z position, roll, pitch, and yaw). This makes the quadcopter control law <i>an underactuated system</i>. 
