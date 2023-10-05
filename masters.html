@@ -57,8 +57,8 @@
 								This work is heavily based on <a href="https://arxiv.org/abs/2109.04749">A Holistic Approach to Reactive Mobile Manipulation by Haviland et al.</a>
 								Their approach to treating the mobile base and robot arm as a single system in a motion controller enabled smooth/graceful motion that achieves a desired end effector pose and avoids joint position/velocity limits 
 								while maximizing <a href="https://doi.org/10.1177/02783649850040020"> Yoshikawa's Manipulability index.</a>
-								This project expands their work by incorporating three additional degrees of freedom (DoFs) in a parallel manipulator elevator between 
-								the mobile base and the robotic arm to create a 12-DoF system. We demonstrate and compare various implementation methods to incorporate the elevator through simulation in ROS1/ Gazebo. 
+								This project expands their work by incorporating three additional degrees of freedom (DOFs) in a parallel manipulator elevator between 
+								the mobile base and the robotic arm to create a 12-DOF system. We demonstrate and compare various implementation methods to incorporate the elevator through simulation in ROS1/ Gazebo. 
 								Additionally, we discuss the homogenous Power Manipulability as a promising alternative manipulability index to restructure the motion controller algorithm.</p>
 							
 							<h2>Holistic Control Demos</h2>
@@ -111,7 +111,7 @@
 								For the cost function to have a global minimum, matrix \(P\) must be positive definite. It is desirable to turn a QP into some form that a serial robot arm
 								can utilize. 
 							</p>
-							<h3>Manipulator Kinematics Refresher</h3>
+							<h2>Manipulator Kinematics Refresher</h2>
 							<p>I will not be going into significant detail regarding the derivation of joint space and task space for manipulators as there is a wealth of information online
 								detailing this process. For now, we assume there is a function \(F(q)\) that can map the joint space parameters to task space \(P\). We write this relationship as:
 								$$P=F(q)$$
@@ -125,7 +125,7 @@
 								equation becomes \(\dot{q} = J^\top{}v\). Let's enable error to be a factor by making \(v\) proportional to \(e\). This will cause the robot arm to be pulled in the direction of 
 								desired pose. It's velocity will decay as it approaches the goal. </p>
 								<!-- <br/><br/> -->
-							<h3>RRMC into QP</h3>
+							<h2>RRMC into QP</h2>
 							<p>
 							Taking the idea of the RRMC, we can get the exact same result by reorganizing it into a QP. 
 							<!--RRMC as QP-->
@@ -137,8 +137,15 @@
 							
 							</p>
 							
-							<h3>Introduction of Manipulability</h3>
-							<p></p>
+							<h2>Introduction to Manipulability</h2>
+							<p>
+								When a robotic arm has more than 6 DOFs it is known as <i>kinematically redundant</i>. In this vein, the arm is now capable of an envelope of valid solutions for reaching a desired end-effector
+								pose. We call this region the null-space. If there are an infinite number of valid configurations within an envelope this begs the question of how to determine what configurations are best.
+								In 1985, Tsuneo Yoshikawa published <a href="https://doi.org/10.1177/02783649850040020"> Manipulability of Robotic Mechanisms</a> outlining a mathematical basis for evaluting 'better' 
+								configurations with a manipulability metric. Thereafter, many different manipulability metrics were developed but Yoshikawa Manipulability remains popular due to its longstanding prominance in literature
+								and well understood mechanics.  
+
+							</p>
 							<div class="box alt">
 								<div class="row gtr-uniform">
 									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
@@ -146,24 +153,98 @@
 									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
 									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
 								</div>
+								<p style="text-align: center;">Different configurations for reaching the same pose. The Yoshikawa Manipulability is calculated in real-time and printed above the end-effector</p>
 							</div>
+							
+							<p>
+							Looking in the above example, what configuration is best for the arm? It's easy to say the one where the arm is in the least 'wonky' position but what does this mean? Yoshikawa developed 
+							a manipulability ellipsoid to help answer this question. The volume of the ellipsoid, the Yoshikawa Manipulability metric, is defined as the following:</p>
+
+							<!--Manipulability metric-->
+                            <p>\[m(q)=\sqrt{\det({\hat{J}(q)\hat{J}(q)^\top{}})}\]</p>
+							
+							<p>
+							Here, \(\hat{J}\) is only the linear or angular part of the Jacobian. Since the linear and angular parts contain different units (m/s or rad/s), the metric becomes ambigious when the Jacobian is not
+							seperated. Typically, the Yoshikawa Manipulability utilizes the linear component of the Jacobian. </p>
+
+							
+							<p>
+							It's helpful to visualize the ellipsoid for different robotic configurations to gain an intuition to what Yoshikawa Manipulability definition means.</p>
 
 							<div class="box alt">
 								<div class="row gtr-uniform">
-									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
-									<div class="col-8"><span class="image fit"><img src="images/MS/manipulability.png" alt="" /></span></div>
-									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-10"><span class="image fit"><img src="images/MS/manipulability.png" alt="" /></span></div>
+									<div class="col-1"><span class="image fit"><img src="" alt="" /></span></div>
 									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
 								</div>
 							</div>
-
 							
+							<p>Look at the poorly conditioned manipulator- the arm cannot extend further out but it can swing side to side. The prinicipal axes of the ellipsoid reflect this relationship as the lateral axis is long,
+							demonstrating the arm, in its current configuration, can quickly move side to side. However, the arm cannot extend out much further as it's already quite extended so the other axis of the ellipsoid 
+							in this direction is very small. This means that the volume of the ellipsoid would be small as well. The well conditioned manipulator, however, is able to move in any direction in about the same speed
+							in its current configuration. This makes the manipulability ellipsoid look more spherical and, thus, have a larger volume. </p>
 
-                            <!--Manipulability metric-->
-                            <p>\[m(q)=\sqrt{\det({\hat{J}(q)\hat{J}(q)^\top{}})}\]</p>
+							<p>
+								It's ideal to have the arm in a well conditioned configuration to help it handle any problems it may encounter. For example, a person could be injured with the arm in poor configuration as the arm
+								could not move out of the way fast enough. Further, when lifting heavy objects the poor configuration will have a much larger level arm which can damage the electronics from the stress. Simply put,
+								if the arm is in a good standing configuration it can employ an apprioriate response that it otherwise may not be able to do in a poorly conditioned configuration.
+							</p>
+							<p>
+								To answer the previously asked question <i>which configuration is best for a given end-effector pose</i>, look back to the gif. Notice that the manipulability is highest when the arm has 
+								mostly right angles. This is entirely intentional as right angles keep the arm together and not extended. Further, this position is usually around the middle ground of each actuators physical limits,
+								allowing it to turn either counter clockwise or clockwise with ease. 
+							</p>
+							
+							<h2>Manipulability and Spatial Velocity Relationship</h2>
+							<p>
+								We previously defined the Joint Space Velocity, \(v\) as \(v = J(q)\dot{q}\). Let us see what happens when we take the time derivative of manipulability and compare this relationship.
+								
+								$$\begin{alignat}{2} 
+									\frac{\text{d} \ m(t)}{\text{d}t} &= \frac{1}{2m(t)}\frac{\text{d}}{\text{d}t}\text{det}(\hat{J}(q)\hat{J}(q)^\top) \\
+									\dot{m} &= J_{m}^\top{}(q)\dot{q}
+								\end{alignat}$$
+								Where
+								
+								$$\begin{alignat}{1} 
+									J_m^\top{} = m \begin{bmatrix} 
+												\text{vec}\Big(\hat{J}(q)\hat{H_1}(q)^\top{}\Big)^\top{}\text{vec}\Big((\hat{J}(q)\hat{J}(q)^\top{})^{-1}\Big) \\
+												\text{vec}\Big(\hat{J}(q)\hat{H_2}(q)^\top{}\Big)^\top{}\text{vec}\Big((\hat{J}(q)\hat{J}(q)^\top{})^{-1}\Big) \\
+												\vdots{} \\
+												\text{vec}\Big(\hat{J}(q)\hat{H_n}(q)^\top{}\Big)^\top{}\text{vec}\Big((\hat{J}(q)\hat{J}(q)^\top{})^{-1}\Big) \\
+									\end{bmatrix} \in \mathbb{R}^n
+								\end{alignat}$$
+								\(J_m^\top{}\) is the manipulability Jacobian, \(\text{vec}(\cdot)\) is a vector operation to convert a matrix column-wise into a column vector (\(\mathbb{R}^{a\times{}b} \rightarrow \mathbb{R}^{ab}\)),
+								and \(\hat{H_i}\) is the translational or rotational component of \(H_i\) which is the \(i^{th}\) component of the manipulator Hessian tensor \(H\).
 
-                            
-                            
+							</p>
+							<p>
+								Compare the time derivative of the manipulability metric with the spatial velocity
+								$$\begin{alignat}{2} 
+									\dot{m} &= J_{m}^\top{}(q)\dot{q} \\
+									 v &= J(q)\dot{q}
+
+								\end{alignat}$$
+								
+							</p>
+
+							<h2>Deriving the Manipulator Hessian Tensor</h2>
+							<p>
+								$$\begin{alignat}{4} 
+									\dot{J} &= \frac{\text{d}J(q)}{\text{d}t} \\
+									&= \frac{\partial J(q)}{\partial q_1}\dot{q_1} + \frac{\partial J(q)}{\partial q_2}\dot{q_2} + \dots +\frac{\partial J(q)}{\partial q_n}\dot{q_n} \\
+									&= \Bigg(\frac{\partial J(q)}{\partial q_1} \quad \frac{\partial J(q)}{\partial q_2} \quad \dots \quad \frac{\partial J(q)}{\partial q_n}\Bigg)\dot{q} \\
+									& = H(q)\dot{q} \in \mathbb{R}^{n \times 6 \times n}
+								\end{alignat}$$
+
+							</p>
+							
+							<h2>QP integrating Manipulability Maximization</h2>
+							<p>The mobile manipulator his highly redundent as it has 13 DOFs when in a holonomic drive configuration and 12 DOFs when it its nonholonmic configuration. We can utilize the concept of manipulability
+								to help move the system in a good configuration while traversing to its goal. 
+
+
+							</p>
                             <!--Resolved Rate Motion Controller-->
                             <p>$$\begin{aligned} v &= J\dot{q}
                                 \\ \dot{q} &= J^\top{}v
