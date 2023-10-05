@@ -59,15 +59,18 @@
 							<p class="button" style="margin: 0.1em;">MATLAB</p>
 							<p class="button" style="margin: 0.1em;">Python</p>
 							<p class="button" style="margin: 0.1em;">Simulation</p>
+							<p class="button" style="margin: 0.1em;">Dynamic Modeling</p>
 
 							<h2 style="margin-top: 1em; margin-bottom: 0.4em;">Executive Summary</h2>
-							<p>The objective of this project was to develop a robust control scheme to enable a quadcopter to track the desired trajectories in the presence of external disturbances. 
+							<p>
+								<!-- <a href="https://github.com/Dom-Ferro/rbe502final">Find the full GitHub implementation here.</a> -->
+
+								The objective of this project was to develop a robust control scheme to enable a quadcopter to track the desired trajectories in the presence of external disturbances. 
 								For this project, the Crazyflie 2.0 was utilized as the quadcopter. This quadcopter is an <a href="https://www.bitcraze.io/products/old-products/crazyflie-2-0/
 								">open source project</a> with both the source code and hardware design documented. 
-								It was paired with ROS 1.0 and Gazebo to manage and simulate the control law. <br/>
-								For this project, a sliding mode controller for altitude and attitude control was designed to track the desired trajectories and visit a set of desired waypoints. 
-								<br/><br/>
-								<!-- <a href="https://github.com/Dom-Ferro/rbe502final">Find the full GitHub implementation here.</a> -->
+								It was paired with ROS 1.0 and Gazebo to manage and simulate the control law. 
+ 								For this project, a sliding mode controller for altitude and attitude control was designed to track the desired trajectories and visit a set of desired waypoints. 
+								 <br/><br/>
 							</p>
 
 							<h3>Quadcopter Trajectory Following</h3>	
@@ -84,7 +87,7 @@
 									<div class="col-6"><span class="image fit"><img src="images/Quadcopter/iso_quad_traj.png" alt="" /></span></div>
 									<div class="col-6"><span class="image fit"><img src="images/Quadcopter/top_quad_traj.png" alt="" /></span></div>
 								</div>
-								<div style="text-align: center;"><p>Quadcopter Planned Trajectory (Green) vs Actual Path (Blue)</p></div>
+								<div style="text-align: center;"><p>Quadcopter Planned Trajectory (Green) vs. Actual Path (Blue)</p></div>
 							</div>
 
 							<h3>Trajectory Generation</h3>
@@ -97,12 +100,13 @@
 									<li>P3 = (1,1,1) to P4 = (0,1,1) in 15 seconds</li>
 									<li>P4 = (0,1,1) to P5 = (0,0,1) in 15 seconds</li>
 								</ul>
-								Where each waypoint (Px) is defined by the world coordinate frame in XYZ order. It’s important to note that between each traversal, the quadcopter will only be moving down one axis. However, 
-								this was a requirement of the project and is not a limitation of the controller. Indeed, the sliding mode controller is capable of trajectory following complex paths.
+								Where each waypoint (Px) is defined by the world coordinate frame in XYZ order. It’s important to note that between each traversal, 
+								the quadcopter will only be moving down one axis. However, this was a requirement of the project and is not a limitation of the controller. 
+								Indeed, the sliding mode controller is capable of trajectory following complex paths. 
 								
 								<br/><br/>
 
-								A MATLAB function generated quintic polynomials for the desired position, velocity and acceleration of the Crazyflie 2.0 at any given time between waypoints. 
+								A MATLAB function generated quintic polynomials for the desired position, velocity, and acceleration of the Crazyflie 2.0 at any given time between waypoints. 
 								The quintic polynomial function was defined as follows:
 
 								$$\begin{alignat}{1} 
@@ -123,16 +127,14 @@
 									\end{bmatrix}
 
 								\end{alignat}$$
-
-								Here, \(t_0\) and \(t_f\) are the starting and stopping times to traverse from waypoint A to waypoint B. \(q_0\) and \(q_f\) are the starting and stopping positions. The first and second time derivatives
-								of \(q_0\) and \(q_f\) are the starting and stopping velocity and acceleration. Using the desired waypoints, we can manipulate the above relationship to calculate the coefficients of the desired
-								trajectory polynomial. 
 								
+								Here, \(t_0\) and \(t_f\) are the starting and stopping times to traverse from waypoint A to waypoint B. \(q_0\) and \(q_f\) are the starting and stopping positions. 
+								The first and second-time derivatives of \(q_0\) and \(q_f\) and are the starting and stopping velocity and acceleration. Using the desired waypoints, we can manipulate the above 
+								relationship to calculate the coefficients of the desired trajectory polynomial. 
 								
 								<br/><br/>
-								The path between each of the five setpoints was calculated using this method and stitched together to create a piecewise function for the overall position of 
-								the quadcopter at any given time.  
-								The graphs for the desired position, velocity, and acceleration can be seen below in below figure. 
+								The path between each of the five setpoints was calculated using this method and stitched together to create a piecewise function for the overall position of the 
+								quadcopter at any given time. The graphs for the desired position, velocity, and acceleration can be seen in the below figure.
 								<!-- The calculated desired trajectory equations were then inserted into the main python script to get the desired trajectory values as the quadcopter was controlled. -->
 
 								<div class="box alt">
@@ -154,10 +156,9 @@
 										<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
 									</div>
 								</div>
-								The derived controller that was implemented for the CrazyFlie 2.0 was a sliding mode controller. 
-								The derivation utilized the dynamics as a control affine system; the given dynamics in the control affine system form can be seen below. 
-								It was assumed throughout the derivation of this control law that all of the model parameters are known and any discrepancies in the nominal and 
-								actual values are handled through robust control methods.
+								The derived controller that was implemented for the CrazyFlie 2.0 was a sliding mode controller. The derivation utilized the dynamics as a control
+								 affine system; the given dynamics in the control affine system form can be seen below. It was assumed throughout the derivation of this control law that all 
+								 of the model parameters are known and any discrepancies in the nominal and actual values are handled through robust control methods.
 
 								<div class="box alt">
 									<div class="row gtr-uniform">
@@ -167,9 +168,8 @@
 									</div>
 								</div>
 
-								Here, \(n\) is the number of joints, \(m\) is the number of controllable inputs (motors), \(\dot{x}\) is the state space representation, 
-								and \(u\) is the control inputs. Before transforming the quadcopters equations of motion into the state space representation, 
-								they must first be defined. Below is the system dynamics assuming small angles.
+								Here, \(n\) is the number of joints, \(m\) is the number of controllable inputs (motors), \(\dot{x}\) is the state space representation, and \(u\) is the control inputs. 
+								Before transforming the quadcopter equations of motion into the state space representation, they must first be defined. Below are the system dynamics assuming small angles.
 
 								<div class="box alt">
 									<div class="row gtr-uniform">
@@ -177,13 +177,14 @@
 										<div class="col-6"><span class="image fit"><img src="images/Quadcopter/equationsOfMotion.png" alt="" /></span></div>
 										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
 									</div>
-									<div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div>
+									<div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of the X-axis translation and not the derivative of the state space..</p></div>
 								</div>
 								The quadcopter has 6 degrees of freedom (DoFs) which results in 6 equations of motion. 
 								<br/><br/>
-								Only 4 equations of motions are utilized as there are only 4 control inputs (4 motors). For quadcopters, it is common to design a controller for 
-								the altitude and attitude only (z position, roll, pitch, and yaw). This makes the quadcopter control law <i>an underactuated system</i>. 
-								So, the q, the generalized coordinates matrix, is defined by below.
+
+								Only 4 equations of motion are utilized as there are only 4 control inputs (4 motors). For quadcopters, it is common to design a controller for the
+								altitude and attitude only (\(z\), \(\phi\), \(\psi\), \(\theta\)). This makes the quadcopter control law <i>an underactuated system</i>. 
+								So, the \(q\) generalized coordinates matrix is defined below.
 								<div class="box alt">
 									<div class="row gtr-uniform">
 										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
@@ -192,8 +193,60 @@
 									</div>
 									<!-- <div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div> -->
 								</div>
-								Unforuntately, since this final project is still being utilized by Worcester Polytechnic Insitute, the exact derivation cannot be continued here as the derivation becomes too specific.
-								However, I am happy to answer any questions about the derivation via my email: <a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>
+
+								We can define an error function as the difference between the current configuration, \(q\) and the desired configuration \(q_d\).  
+
+								<!-- <br/><br/> -->
+								
+								$$\begin{alignat}{1}
+									e = q - q_d \\
+									\dot{e} = \dot{q} - \dot{q_d}
+									
+								
+								\end{alignat}$$	
+
+								We use the error function to define a general surface equation \(s\) as  
+								$$\begin{alignat}{1}
+									s = \dot{e} + \lambda e \\
+								\end{alignat}$$
+
+								We design \(s\) such that it can replace the second-order problem with a first-order problem with the following conditions.
+
+								<ol>
+                                    <li>\(\dot{s}\) contains \(u\)</li>
+									<li>If \(s \rightarrow 0 \Rightarrow e \rightarrow 0, \ \dot{e} \rightarrow 0, \ \ddot{e} \rightarrow 0, \ \ldots \)</li>
+
+                                </ol>
+
+								These conditions force the error dynamics to converge onto the sliding surface (\(s=0\)). We can visualize this graphically, as seen below.
+								<div class="box alt">
+									<div class="row gtr-uniform">
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+										<div class="col-6"><span class="image fit"><img src="images/Quadcopter/slidingmodecontrol.png" alt="" /></span></div>
+										<div class="col-3"><span class="image fit"><img src="" alt="" /></span></div>
+									</div>
+									<!-- <div style="text-align: center;"><p>Note: \(\ddot{x}\) above is the 2nd time derivative of X axis translation and not the derivative of the state space.</p></div> -->
+								</div>
+
+								Finally, we want to design our control input, \(u\) such that from any initial condition \(q(0)\), we can bring the system to the surface \(s=0\) in finite time. 
+								Once the trajectory reaches the sliding mode, it will remain on it until \(q(t) \rightarrow q_d(t)\). To achieve this control objective, we design the control law such that 
+								outside of \(s(t)\) the following sliding condition is satisfied.  
+								
+								$$\begin{alignat}{1}
+									s\dot{s} = \frac{1}{2} \frac{d}{dt}s^2 \leq -k|s(t)| \qquad k > 0 \\
+								\end{alignat}$$
+								The sliding condition means that the squared distance to the surface decreases along all system trajectories. 
+
+								<br/><br/>
+								The next step is to derive the control law by evaluating the sliding condition. Since this is a highly specific derivation, I cannot continue as this final project is still 
+								being utilized by Worcester Polytechnic Insitute. However, I am happy to answer any questions about the derivation via my email: 
+								<a href = "mailto: ejackson@wpi.edu">ejackson@wpi.edu</a>.
+
+								<br/><br/>		
+
+								On a side note, a sliding mode controller often has chatter- a fast oscillation between the reaching mode and sliding mode while traversing towards the origin. 
+								This is due to model inaccuracies, not instantaneous switching, and limited \(s(t) \) precision. To mitigate this, we employ a saturation function \(sat(\frac{s}{\phi})\)
+								to work within a boundary around the sliding mode. 
 							</p>
 							<!-- <h3>Discussion</h3>
 							<p>The quadcopter was able to stay within the boundary layer of the desired trajectory, but required further tuning to decrease the boundary layer and get a more accurate trajectory following. It can be seen that the quadcopter follows the XY coordinates significantly better than the Z coordinates. This can be attributed to how the quadcopter moves; by tilting and moving at a very slow 15 second trajectory. If the trajectory was quicker (10 seconds), the quadcopter could tilt in a more stable manner and follow the desired Z trajectory closer. Further, the tuning values could be further optimized to push the robot further down the Z axis while also maintaining the necessary XY translational gains. 
