@@ -62,21 +62,32 @@
 								Additionally, we discuss the homogenous Power Manipulability as a promising alternative manipulability index to restructure the motion controller algorithm.</p>
 							
 							<h2>Holistic Control Demos</h2>
-							<center>
+							<p>
+							<div>
 								<video width="100%" controls="controls">
 									<source src="images/MS/Capstone Video Demos.mp4">
 									Your browser does not support the video tag.
 								</video>
-								<a href="https://youtu.be/WngMKqCbG34">https://youtu.be/WngMKqCbG34</a>
-							</center>
+								<a href="https://youtu.be/WngMKqCbG34"><p style="text-align: center; margin-bottom: 0%;">https://youtu.be/WngMKqCbG34</p></a>
+								<p style="text-align: center;">Brief explanation here TODO</p>
+							</div>
+							</p>
 
-							<p>Brief explanation here TODO</p>
+							
 							
 							<h2>What is a Mobile Manipulator?</h2>
 							<p>A Mobile Manipulator can be defined as a robot arm (a manipulator) attached to a mobile base. 
 								These systems are usually extremely redudent by having many Degrees of Freedom (DOFs). 
 								Our system has 12/13 DOFs depending on the desired configuration.</p>
-								
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<div class="col-8"><span class="image fit"><img src="images/MS/dofExploded.png" alt="" /></span></div>
+									<div class="col-2"><span class="image fit"><img src="" alt="" /></span></div>
+									<!-- <div class="col-6"><span class="image fit"><img src="images/MQP/elevator render.gif" alt="" /></span></div> -->
+								</div>
+								<!-- <p style="text-align: center;">Different configurations for reaching the same pose. The Yoshikawa Manipulability is calculated in real-time and printed above the end-effector</p> -->
+							</div>
 							<p>A Mobile Manipulator is a highly valuable asset to researchers and manufacturers. 
 								A traditional robot arm is constrained to a workspace limited by joint limits, link lengths, and self collision. 
 								A Mobile Manipulator allows this workspace to travel which enables significantly more possibilties such as long distance pick and place, rescue operations, bomb defusing, etc.</p>
@@ -196,9 +207,9 @@
 								allowing it to turn either counter clockwise or clockwise with ease. 
 							</p>
 							
-							<h2>Manipulability and Spatial Velocity Relationship</h2>
+							<h2>Manipulability and Null Space</h2>
 							<p>
-								We previously defined the Joint Space Velocity, \(v\) as \(v = J(q)\dot{q}\). Let us see what happens when we take the time derivative of manipulability and compare this relationship.
+								Let us see what happens when we take the time derivative of manipulability.
 								
 								$$\begin{alignat}{2} 
 									\frac{\text{d} \ m(t)}{\text{d}t} &= \frac{1}{2m(t)}\frac{\text{d}}{\text{d}t}\text{det}(\hat{J}(q)\hat{J}(q)^\top) \\
@@ -219,14 +230,89 @@
 
 							</p>
 							<p>
+								A kinematically redundant manipulator has null space, as we explored above. However, we can augment our spatial velocity equation (\(v = J(q)\dot{q}\)) by restricting \(v=0\) to result
+								in no end effector motion. We can project \(q_{null}\) onto the null space to maintain the 0 spatial velocity objective. The equation now takes the form:
+								$$\begin{alignat}{1} 
+									\dot{q} = J(q)^+v + \big(1_n-J(q)^+J(q)\big)\dot{q}_{null}
+								\end{alignat}$$
+
+								Here, the symbol \(\dot{q}_{null}\) represents the desired joint velocities specifically intended for the null-space motion. This notation indicates the target or planned velocities for 
+								the robot's joints when executing tasks within the null space, which is a subspace orthogonal to the primary task space.			
+								Park suggested utilizing the Yoshikawa manipulability metric gradient as \(\dot{q}_{null}\)​. This configuration would push the robot configuration into higher manipulability orientations
+								without hindering the primary task objective. The final equation takes the form:
+								$$\begin{alignat}{1} 
+									\dot{q} = J(q)^+v + \frac{1}{\lambda}\big(1_n-J(q)^+J(q)J_m(q)\big)
+								\end{alignat}$$
+								
+								Where \(\lambda\) is a scalar gain to scale the enforcment of the manipulability maximization influence. We can import this equation into a Quadratic Program problem.   
+							</p>
+							<h3>Park's Manipulability Equation as a QP</h3>
+							We reorganize Parks equation into a QP cost function to find the minimum joint-velocity norm needed to achieved the desired end-effector velocity. 
+							<p>
+								$$\begin{alignat}{2} 
+									\underset{\dot{q}}{\text{minimize$:$}} &\quad& f_0(\dot{q}) &= \frac{1}{2}\dot{q}^\top{}\lambda 1_n\dot{q} - J_{m}^\top(q)\dot{q} \\
+									\text{subject to$:$}             &\quad& J(q)\dot{q} &= v \\
+
+								\end{alignat}$$
+							Building off this concept can expand the QP to incorporate a mobile base and enforce other conditions such as velocity and positional joint limits. 
+							</p>
+
+							<h2>Holistic Hybrid Manipulator QP - The Whole Deal</h2>
+							
+							<p>$$\begin{alignat}{3} 
+                                \underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
+                                \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
+                                                                 &\quad& Ax &\le B  \\
+                                                                 &\quad& X^- &\le x \le X^+
+                            \end{alignat}$$</p>
+
+							<p>
+
+								$$\begin{aligned}
+									X^- = \begin{bmatrix} \dot{q}^- \\ \delta{}^- \end{bmatrix} \\
+									X^+ = \begin{bmatrix} \dot{q}^+ \\ \delta{}^+ \end{bmatrix} \\
+									x = \begin{bmatrix} \dot{q} \\ \delta{} \end{bmatrix} \\
+
+									A = \begin{bmatrix} A_b \\ A_{elev_p} \\ A_{elev_r} \\ A_a \\ 1_6 \end{bmatrix} = \begin{bmatrix} \pm{}1_{nxn+6}\end{bmatrix} \\
+									B = \begin{bmatrix} 0_b \\ B_{elev_p} \\ B_{elev_r} \\ B_a \end{bmatrix} \\
+									
+									B_{elev_{p,r}},B_a = \begin{bmatrix} \frac{q_{elev_{p,r},a} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}} \\
+															\vdots{} \\
+															\frac{q_{n} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}}
+															\end{bmatrix} \\
+
+									Q = \begin{bmatrix} diag(\lambda{}_b) & \space & \space & 0_{(n+6)x(n+6)} \\
+														\space & diag(\lambda{}_{elev}) & \space & \space \\
+														\space & \space & diag(k_a) \space \\
+														0_{(n+6)x(n+6)} & \space & \space & diag(\lambda{}_\delta{})							
+														\end{bmatrix} \\
+
+									k_a = \text{constant} \\
+									\lambda{}_{elev} = \begin{pmatrix} \frac{1}{||e||} & k_{elev_r}\end{pmatrix} \\
+									\lambda{}_b,\lambda{}_\delta = \frac{1}{||e||} \\
+
+									C = \begin{bmatrix} 
+										J_m + \epsilon \\ 0_{6x1}
+										\end{bmatrix} \\
+									J_m = \begin{bmatrix} 
+										0_b \\ J_{m,a}^\top{}
+										\end{bmatrix} \\
+									\epsilon = \begin{bmatrix} -k_\epsilon\theta_\epsilon \\
+										0_{n-1}								
+										\end{bmatrix} \\
+								\end{aligned}$$
+							</p>
+
+							<!-- <p>
 								Compare the time derivative of the manipulability metric with the spatial velocity
 								$$\begin{alignat}{2} 
 									\dot{m} &= J_{m}^\top{}(q)\dot{q} \\
 									 v &= J(q)\dot{q}
 
 								\end{alignat}$$
-								
-							</p>
+								They become similar looking. 
+
+							</p> -->
 
 							<h2>Deriving the Manipulator Hessian Tensor</h2>
 							<p>
@@ -251,11 +337,11 @@
                                 \\ v &\propto e
                                 \\ e &= p^*-p\end{aligned}$$</p>
 
-                            
+
 
                             <!--Holistic Controller Eqn-->
                             <p>$$\begin{alignat}{3} 
-                                \underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
+                                \underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
                                 \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
                                                                  &\quad& Ax &\le B  \\
                                                                  &\quad& X^- &\le x \le X^+
