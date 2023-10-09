@@ -120,31 +120,141 @@
 
 							<h2>Control Derivation</h2>
 
+							
+							<h2>Manipulator Kinematics Refresher</h2>
+							<p>I will not be going into significant detail regarding the derivation of joint space and task space for manipulators as there is a wealth of information online
+								detailing this process. For now, we assume there is a function \(F(q)\) that can map the joint space parameters to task space \(P\). We write this relationship as:
+								
+								$$P=F(q) \in \mathbb{R}^6$$
+
+								Where \(P\) is the end effector location in task space, and \(q\) are the joint angles of the manipulator arm. 
+								Often, a rigid-body transformation from frame {b} to {a} as \(^aT_b\) is used to define the arm from joint to joint to eventual end effector. Thus, we express
+								the forward kinematics with respect to these transformation matrices as:
+
+								<p>
+									$$\begin{split}
+										\begin{alignat}{3} 
+										^nT_0 &= ^nT_{n-1}(q_n) \cdot ^{n-1}T_{n-2}(q_{n-1}) \cdot \ldots \cdot ^1T_0(q_1) \\
+										^nT_0 &= \prod_{i=-n}^{-1} T(q_{-i}) \\
+										\end{alignat}
+									\end{split}
+									\quad \quad \quad
+									\begin{split}
+										T = \begin{bmatrix}
+										r_{11} & r_{12} & r_{13} & t_1 \\
+										r_{21} & r_{22} & r_{23} & t_2 \\
+										r_{31} & r_{32} & r_{33} & t_3 \\
+										0 & 0 & 0 & 1 \\
+										\end{bmatrix}
+										\in \mathbb{R}^{4 \times 4}
+									\end{split}
+									$$
+								</p>
+								\(^aT_b\) is the homogenous transformation matrix used to strategically transition up a serial manipulator from the world frame to the end effector frame. The transformation
+								matrix has two parts: a rotation matrix (\(r_{ij}\)) and the linear vector (\(t_i)\) to describe the transition from frame {b} to frame {a}. It is
+								useful extract just the rotation matrix or linear information, so we define the functions \(\rho (T)\) and \(\tau (T)\) to isolate this information. 
+
+								<p>
+									$$
+									\begin{split}
+									\rho (T) = \begin{bmatrix}
+										r_{11} & r_{12} & r_{13} \\
+										r_{21} & r_{22} & r_{23} \\
+										r_{31} & r_{32} & r_{33} \\
+										\end{bmatrix} = R \in \text{SO(3)}
+									\end{split} \quad \quad \quad
+									\begin{split}
+										\tau (T) = \begin{bmatrix}
+										t_1 \\ t_2 \\ t_3
+										\end{bmatrix} \in \mathbb{R}^3
+									\end{split} \\
+
+									$$
+								</p>
+								To relate \(P\) to \(T\), we can define the following relationship.
+								<p>
+									$$
+									P = \begin{bmatrix}
+										\tau(^nT_0) \\ \rho(^nT_0) \\
+									\end{bmatrix}
+									$$
+								</p>
+								
+								<h2>Deriving the Jacobian</h2>
+								The forward kinematics relationship can be expanded by taking the time derivative.
+								
+								<p>
+									$$
+									\begin{split}
+										\begin{alignat}{2}
+										\frac{\partial P}{\partial t}&=\frac{\partial F(q)}{\partial t} \\
+										
+										v &= J(q)\dot{q} 
+										\end{alignat}
+									\end{split} \quad \quad
+									\begin{split}
+										J_i (q) = \begin{bmatrix}
+											J_{v_i} (q) \\ 
+											J_{w_i} (q) \\ 
+										\end{bmatrix} \in \mathbb{R}^6 
+									\end{split}
+									$$
+								</p>
+
+								Where \(v\) is what's known as the Spatial Velocity. The manipulator Jacobian, \(J \in \mathbb{R}^{6\times n}\), contains linear (\(J_{v_i} (q)\)) and angular
+								(\(J_{w_i} (q)\)) components for each frame, \(i\). To find an indepth solution of calculating the Jacobian, reference to outside sources. 
+								
+								Using this relationship, we are able to determine the linear and angular velocites of the end effector knowing only the
+								current joint angles, the current joint angular velocities, and the linkage lengths. 
+								</p>
+
+							<h2>Creating a Resolved-Rate Motion Controller (RRMC)</h2>
+								<p>
+								We can now make a Resolved Rate Motion Controller by introducing the idea of error- where the end 
+								effector currently is compared against where we want it to be. By evaluating 
+									
+									$$
+										e(q) = \begin{bmatrix}
+										\tau\big(^{e^*}T_0(q)\big) - \tau\big(^nT_0(q)\big) \\
+										\alpha\Big(\rho\big(^{e^*}T_0(q)\big) \rho\big(^nT_0(q)\big)^\top\Big) \\ 
+										\end{bmatrix} \in \mathbb{R}^6
+									$$
+								Where \(e(q)\) is the error function- comparing the desired pose \(e^*\) with the current position of the end effector. We massage
+								the homogenous transfer function to extract the linear and angular components. \(\alpha(\cdot)\) converts a rotation matrix, \(R\), into
+								a column vector of euler-angles (\(\mathbb{R}^{3 \times 3} \rightarrow \mathbb{R}^3\)). We relate \(e\) to the Spatial Velocity, \(v\) to create
+								a velocity vector pointing towards the desired pose.
+									
+									$$
+										v = \text{k}e
+									$$
+								Where \(\text{k}\) is typically a singular value or \(diag(k_l, k_l, k_l, k_r, k_r, k_r)\) as a proportional gain. \(\text{k}\) has the units of \(s^{-1}\) and directly influences
+								the 'strength' the error has towards pushing the arm in the direction of the desired pose. A larger \(k\) value will produce a faster convergence. To complete the
+								equation, we must reorganize the spatial velocity equation to include error.
+									$$
+									\begin{alignat}{2}
+										v = J(q)\dot{q} \Rightarrow \dot{q} &= J(q)^+ v \\
+										\dot{q} &= J(q)^+ \text{k}e
+										
+									\end{alignat}
+									$$
+								\((\cdot)^+\) is the moore penrose pseudo inverse. If the Jacobian is square, the inverse may be used intsead. 
+								Here, we observe at each instance a new instanous joint angle velocity is calculated. By running this equation continously the arm will guide itself along the velocity vector
+								and traverse towards to the desired pose in an exponential decay manner.
+								</p>
+								<!-- <br/><br/> -->
+
+							<h2>Quadratic Program Introduction</h2>
 							<p>A Quadratic Program (QP) has the form</p>
 							<!--QP Definition-->
-                            <p>$$\begin{alignat}{3} 
+							<p>$$\begin{alignat}{3} 
 								\underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Px + q^\top{}x \\
 								\text{subject to$:$}             &\quad& Gx &\le h \\
-																 &\quad& Ax &= b  
+																	&\quad& Ax &= b  
 							\end{alignat}$$</p>
 							<p>Where  \(x\) is the optimization variable, \(f_0(x)\) is the optimization cost function, and the subject to equations are constraints put on the cost function.
 								For the cost function to have a global minimum, matrix \(P\) must be positive definite. It is desirable to turn a QP into some form that a serial robot arm
 								can utilize. 
 							</p>
-							<h2>Manipulator Kinematics Refresher</h2>
-							<p>I will not be going into significant detail regarding the derivation of joint space and task space for manipulators as there is a wealth of information online
-								detailing this process. For now, we assume there is a function \(F(q)\) that can map the joint space parameters to task space \(P\). We write this relationship as:
-								$$P=F(q)$$
-								Where \(P\) is the end effector location in task space, and \(q\) are the joint angles of the manipulator arm. This relationship can be expanded by taking the time derivative.
-								$$\frac{\text{d}P}{\text{d}t}=\frac{\text{d}F(q)}{\text{d}t} \Longrightarrow v = J(q)\dot{q}$$
-								Where \(v\) is what's known as the Spatial Velocity. Using this relationship, we are able to determine the linear and angular velocites of the end effector knowing only the
-								current joint angles, the current joint angular velocities, and the linkage lengths. We can now make a Resolved Rate Motion Controller by introducing the idea of error- where the end 
-								effector currently is compared against where we want it to be. 
-								$$e(q) = P^*-P(q)$$
-								Here, \(P^*\) is the desired task space end effector pose and \(P\) is the current pose. Now, if we reorganize our Spacial Velocity equation to solve for angular joint velocites, the 
-								equation becomes \(\dot{q} = J^\top{}v\). Let's enable error to be a factor by making \(v\) proportional to \(e\). This will cause the robot arm to be pulled in the direction of 
-								desired pose. It's velocity will decay as it approaches the goal. </p>
-								<!-- <br/><br/> -->
 							<h2>RRMC into QP</h2>
 							<p>
 							Taking the idea of the RRMC, we can get the exact same result by reorganizing it into a QP. 
@@ -267,7 +377,122 @@
 							</p>
 
 							<h2>Holistic Hybrid Manipulator QP - The Whole Deal</h2>
-							
+
+							<p><span class="image right"><img src="images/MS/differentJoints3.png" alt="" /></span>We've introduced the idea of error, manipulability maximization for redundant manipulators, and quadratic programs. It would beneficial
+								to combine all these elements into a mobile manipulator with hybrid actuators to keep the entire system control under one governing equation.
+								We can begin this process by identifying the different sections of the hybrid mobile manipulator.
+								<br/><br/>
+								We define \(q_a\),  \(q_{elev}\),  \(q_b\) as the joints defining the arm, the elevator, and base. We simplify the system to be a serial manipulator. The base, as a nonholonmic configuration,
+								is simply a revolute and forward facing prismatic joint. The elevator system was crudely simplified into two perpendicular superimposed revolute joints and a prismatic joint. We divide the elevator joints into
+								\(q_{elev_r}\) and \(q_{elev_p}\) to reflect the revolute and prismatic joint dicrepency. Since this project utilized the Panda Arm, all \(q_a\) are revolute joints.
+							</p>
+
+							<h3>Joint Limits Dampeners, Velocity Limits, and Slack</h3>
+							<p>
+								We can directly incorporate velocity limits into the QP as restrictions to the cost function. In our extremely redundant system, this ideal to prevent the elevator or arm from over exerting itself
+								in an unobtainable configuration. We can simply write:
+								$$
+									\text{subject to$:$} \quad  \dot{q}^- \le \dot{q} \le \dot{q}^+ \\
+								$$
+								in the QP. With the hybrid manipulator, we can restrict the velocities of all joints independently. 
+
+								<br/><br/>
+								
+								Since the QP is written with respect to the joint angle velocity, a restriction to joint angle position is not as trivial. One solution create a velocity
+								dampener that activates when a joint angle is approaching its physical limit. This effectively acts as a positional limit gaurd. We write the relationship
+
+								$$
+								\dot{q} \le \frac{\rho - \rho{}_s}{\rho{}_i - \rho{}_s} \quad \text{if} \ \rho < \rho{}_i
+								$$
+								Where \(\rho \) is the angle or distance to the nearest joint limit. \(\rho_i\) is the distance from the limit to begin enforcing the velocity dampener and \(\rho_s\)
+								is the stopping value that \(\rho\) can never surpass. This relationship can be reformatted into the QP as
+								$$
+								\dot{q} \le \begin{bmatrix}
+									\frac{\rho_0 - \rho{}_s}{\rho{}_i - \rho{}_s} \\
+									\vdots \\
+									\frac{\rho_n - \rho{}_s}{\rho{}_i - \rho{}_s}
+									\end{bmatrix}
+								$$
+
+								However, these constraints can introduce a local minima preventing the robot from reaching the goal. To avoid this behavior, a slack term can be added to allow for some 
+								deviation from the end effector velocity. 
+								$$
+								v(t) = v^*(t) - \delta(t)
+								$$
+								Where \(v^*\) is the desired spatial velocity and the slack, \(\delta(t) \in \mathbb{R}^6\), is in intentional error to be chosen by the QP. Now, we augment
+								the optimization variable, \(q\), to include the slack variable as
+								$$
+								x = \begin{bmatrix}
+									\dot{q} \\ \delta \\
+									\end{bmatrix} \in \mathbb{R}^{n+6}
+								$$
+								as \(x\) to be the new optimization variable. To have the QP reflect this augmentation, it is altered as follows:
+
+								$$
+								\begin{alignat}{3} 
+                                \underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Qx \\
+                                \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= v \\
+                                                                 &\quad& Ax &\le B  \\
+                                                                 &\quad& X^- &\le x \le X^+
+                            	\end{alignat}
+								$$
+
+								with
+
+								$$\begin{alignat}{4}
+									X^{-,+} &= \begin{bmatrix} \dot{q}^{-,+} \\ \delta{}^{-,+} \end{bmatrix} \in \mathbb{R}^{n+6} \\
+
+									A &= \begin{bmatrix} \pm{}1_{nxn+6}\end{bmatrix} \in \mathbb{R}^{n\times (n+6)}\\
+									B &= \begin{bmatrix}
+										\frac{\rho_0 - \rho{}_s}{\rho{}_i - \rho{}_s} \\
+										\vdots \\
+										\frac{\rho_n - \rho{}_s}{\rho{}_i - \rho{}_s}
+										\end{bmatrix} \in \mathbb{R}^{n}\\
+									
+									
+
+									Q &= \begin{bmatrix} \lambda_q & 0_{6\times 6} \\
+														0_{n\times n} & \lambda_{\delta} \\							
+														\end{bmatrix} \in \mathbb{R}^{(n+6)\times (n+6)}\\
+
+									\mathcal{J} &= \begin{bmatrix}
+										J(q) & 0_{6\times 1} \\ 
+										\end{bmatrix} \in \mathbb{R}^{6\times (n+6)}
+
+									
+									\end{alignat}$$
+								
+								</p>
+
+							<h3>Adding Manipulability Maximization to the QP</h3>
+							<p>
+								However, by this stage we have not included any manipulability maximization conditions. We look to Park's implementation as a QP for inspiration.
+								The QP becomes
+
+								$$\begin{alignat}{3} 
+									\underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
+									\text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
+																	&\quad& Ax &\le B  \\
+																	&\quad& X^- &\le x \le X^+
+								\end{alignat}$$
+								
+								with
+								
+								$$
+								C = \begin{bmatrix} 
+										J_m \\ 0_{6x1}
+										\end{bmatrix} \in \mathbb{R}^{n+6}
+								$$
+
+								\(J_m\) is the manipulability Jacobian previously explored. This addition is the same as adding pushing the null space in the manipulability gradient reformatted as a QP.
+								This QP is now capable of maximizing manipulability for kinematically redundant manipulators, avoiding joint limits, and limiting velocities while traversing towards the desired end effector
+								pose. Additionally, with the benefit of slack, joint, velocity, and manipulability maximization constraints are relaxed to help avoid local minima.
+							</p>
+
+							<h3>Adding the Base and Elevator</h3>
+							Thus far, our QP has been limited to a robot that is fixed to the world frame. In a mobile manipulator, the robot arm is fixed to the base and is able to freely traverse
+							the world. 
+
 							<p>$$\begin{alignat}{3} 
                                 \underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
                                 \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
