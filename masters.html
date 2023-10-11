@@ -61,14 +61,14 @@
 						<div class="inner">
 							<h1>Holistic Hybrid Mobile Manipulator Control</h1>
 							<!-- <span class="image main"><img src="images/pic13.jpg" alt="" /></span> -->
-							<p>This letter details the design of a reactive hybrid mobile manipulator based on the implementation of 
+							<p>This project details the design of a hybrid mobile manipulator progressed on the implementation of 
 								<a href="modular_mobile_manipulator.html">Design and Implementation of a Mobile Manipulator MQP.</a>
 								This work is heavily based on <a href="https://arxiv.org/abs/2109.04749">A Holistic Approach to Reactive Mobile Manipulation by Haviland et al.</a>
-								Their approach to treating the mobile base and robot arm as a single system in a motion controller enabled smooth/graceful motion that achieves a desired end effector pose and avoids joint position/velocity limits 
+								Their approach to treating the mobile manipulator as a single system in a motion controller enabled smooth/graceful motion that achieves a desired end effector pose and avoids joint position/velocity limits 
 								while maximizing <a href="https://doi.org/10.1177/02783649850040020"> Yoshikawa's Manipulability index.</a>
 								This project expands their work by incorporating three additional degrees of freedom (DOFs) in a parallel manipulator elevator between 
-								the mobile base and the robotic arm to create a 12-DOF system. We demonstrate and compare various implementation methods to incorporate the elevator through simulation in ROS1/ Gazebo. 
-								Additionally, we discuss the homogenous Power Manipulability as a promising alternative manipulability index to restructure the motion controller algorithm.</p>
+								the mobile base and the robotic arm to create a 12-DOF system. We demonstrate this implementation through simulation in ROS1/ Gazebo. 
+								</p>
 							
 							<h2>Holistic Control Demos</h2>
 							<p>
@@ -78,7 +78,7 @@
 									Your browser does not support the video tag.
 								</video>
 								<a href="https://youtu.be/WngMKqCbG34"><p style="text-align: center; margin-bottom: 0%;">https://youtu.be/WngMKqCbG34</p></a>
-								<p style="text-align: center;">Brief explanation here TODO</p>
+								<p style="text-align: center;">12DOF Mobile Manipulator traversing towards a goal pose while maximizing Yoshikawa Manipulability to maintain desirable arm configurations.</p>
 							</div>
 							</p>
 
@@ -118,8 +118,15 @@
 							We extend their research through additional redudency in a 3 degree of freedom (DOF) parallel manipulator elevator. 
 							We simplify the elevator as a serial linkage consisting of a prismatic joint and two revolute joints.</p>
 
-							<h2>Control Derivation</h2>
+							<h2>Table Of Contents</h2>
+							<p>
+								The remainder of this webpage explores the ground up process of deriving the controller used. We begin with an introduction of kinematics and deriving a basic controller. We expand these concepts
+								through the idea of an optimization based problem formatted as a Quadratic Program (QP). It is my hope that the writing contained in here will give a basic idea how to use this incredibly and 
+								fascinating control approach to control their own mobile manipulators. 
+								<br/><br/> The authors Jesse Haviland, Niko Sünderhauf, and Peter Corke importance in this cannot be understated. I would have not been able to implement this controller without their novel
+								research.
 
+							</p>
 							
 							<h2>Manipulator Kinematics Refresher</h2>
 							<p>I will not be going into significant detail regarding the derivation of joint space and task space for manipulators as there is a wealth of information online
@@ -368,7 +375,7 @@
 							<h3>Park's Manipulability Equation as a QP</h3>
 							We reorganize Parks equation into a QP cost function to find the minimum joint-velocity norm needed to achieved the desired end-effector velocity. 
 							<p>
-								$$\begin{alignat}{2} 
+								$$\begin{alignat}{2} \tag{pQP}
 									\underset{\dot{q}}{\text{minimize$:$}} &\quad& f_0(\dot{q}) &= \frac{1}{2}\dot{q}^\top{}\lambda 1_n\dot{q} - J_{m}^\top(q)\dot{q} \\
 									\text{subject to$:$}             &\quad& J(q)\dot{q} &= v \\
 
@@ -429,7 +436,7 @@
 								as \(x\) to be the new optimization variable. To have the QP reflect this augmentation, it is altered as follows:
 
 								$$
-								\begin{alignat}{3} 
+								\begin{alignat}{3} \tag{xQP}
                                 \underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Qx \\
                                 \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= v \\
                                                                  &\quad& Ax &\le B  \\
@@ -456,7 +463,7 @@
 														\end{bmatrix} \in \mathbb{R}^{(n+6)\times (n+6)}\\
 
 									\mathcal{J} &= \begin{bmatrix}
-										J(q) & 0_{6\times 1} \\ 
+										J(q) & 1_{6} \\ 
 										\end{bmatrix} \in \mathbb{R}^{6\times (n+6)}
 
 									
@@ -466,12 +473,12 @@
 
 							<h3>Adding Manipulability Maximization to the QP</h3>
 							<p>
-								However, by this stage we have not included any manipulability maximization conditions. We look to Park's implementation as a QP for inspiration.
+								However, by this stage we have not included any manipulability maximization conditions. We look to Park's implementation (pQP) as a QP for inspiration.
 								The QP becomes
 
-								$$\begin{alignat}{3} 
-									\underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
-									\text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
+								$$\begin{alignat}{3} \tag{cQP}
+									\underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\ 
+									\text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\ 
 																	&\quad& Ax &\le B  \\
 																	&\quad& X^- &\le x \le X^+
 								\end{alignat}$$
@@ -490,51 +497,196 @@
 							</p>
 
 							<h3>Adding the Base and Elevator</h3>
-							Thus far, our QP has been limited to a robot that is fixed to the world frame. In a mobile manipulator, the robot arm is fixed to the base and is able to freely traverse
-							the world. 
+							
+							<p>
+									
+								Thus far, our QP has been limited to a robot that is fixed to the world frame. In a mobile manipulator, the robot arm is fixed to the base and is able to freely traverse
+								the world. As an additional problem, our robot is a <i>hybrid</i> mobile manipulator, situated with an elevator that must also be included. Representing the motion of the manipulator
+								is thus written as
+								$$\begin{split}
+									\begin{alignat}{2}
+									q &= \begin{bmatrix}
+									q_b & q_{elev} & q_a
+									\end{bmatrix}^\top \\
+									\dot{q} &= \begin{bmatrix}
+									\dot{q_b} & \dot{q_{elev}} & \dot{q_a}
+									\end{bmatrix}^\top
+									\end{alignat}
+								\end{split} \quad \rightarrow \quad
+								\begin{split}
+									x = \begin{bmatrix}
+										\dot{q} & \delta 
+									\end{bmatrix} ^\top
+								\end{split}
+								
+								$$
+								
+								<br/><br/>
+								To address a moving base, we reformat our spatial velocity to be with respect to the base frame instead of the world frame.
+								$$
+									\begin{smallmatrix} n \\ \space\end{smallmatrix}v_b(t) = \begin{smallmatrix} n \\ \space\end{smallmatrix}v_b^*(t)-\delta{}(t) \\
+								$$
+								This also causes the Jacobian to be with respect to the base frame, as well. 
 
-							<p>$$\begin{alignat}{3} 
-                                \underset{x}{\text{minimize$:$}} &\quad& f_0(\dot{x}) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
+							</p>
+
+							<p><span class="image left"><img src="images/MS/exploded_dof_serial.png" alt="" /></span>
+								The elevator is a 3DOF parallel system akin to a crude stewart platform. So far, the QP representation has been expressed with manipulators being
+								serial which poses an immediate issue. To solve this, we  approximate the kinematics of the elevator to be two perpendicular revolute joints and a vertical prismatic joint in a serial configuration.
+								This model allows the elevator to tilt along the roll and pitch axis and translate vertically while also satisfying our serial model representation.
+								
+								<br/><br/>
+								Similarly, the base drivetrain is assumed to be a 2DOF tank drive robot. This means the robot rotates about the centroid of its four mecanum wheels and can drive forwards and backwards. While we designed
+								and implemented the mecanum wheels for a holonomic 3DOF configuration, in practice this was extremely unstable and unreliable. So, we limit the movement to a simple 2DOF style driving robot. Assuming there is no
+								slippage- The forward kinematics of a holonomic mecanum wheel system are
+							</p>
+							<p>
+								$$ 
+									\begin{bmatrix}
+										v_x \\ v_y \\ w_z \\
+									\end{bmatrix} = \frac{r}{4} 
+									\begin{bmatrix}
+										1 & 1 & 1 & 1 \\
+										-1 & 1 & 1 & -1 \\
+										-\frac{1}{l_x+l_y} & \frac{1}{l_x+l_y} & -\frac{1}{l_x+l_y} & \frac{1}{l_x+l_y} \\
+									\end{bmatrix}
+									\begin{bmatrix}
+										w_{fl} \\ w_{fr} \\ w_{rl} \\ w_{rr} \\ 
+									\end{bmatrix}
+								$$
+								Where \(v_x\), \(v_y\), and \(w_z\) are world linear and angular velocities abound the local base frame X, Y, and Z axes respectively. \(r\), is the distance to the center of rotation and \(l_x\), and \(l_y\) are the distance to the robots center
+								from the wheels projected on the global X and Y axis, respectively. With the 2DOF configuration, we can immediately simplify this model with two constraints
+
+								<ol>
+									<li>\(v_y = 0\)</li>
+									<li>\(w_{fl} = w_{rl} \quad, \quad  w_{fr} = w_{rr}\)</li>
+								</ol>
+
+								Resulting in the much more workable system of equations
+
+								$$\begin{alignat}{3}
+									v_x &= (w_l + w_r)\frac{r}{2} \\
+									v_y &= 0 \\
+									w_z &= (-w_l + w_r)\frac{r}{2(l_x + l_y)} \\
+								\end{alignat}$$
+								Our QP will calculate \(v_x\) and \(w_z\) from the forward facing prismatic and Z axis revolute joint, so we can utilize these kinematics to solve appropriate wheel velocities. 
+
+								
+								</p>
+								<p><span class="image left"><img src="images/MS/haviland_forwardfacing_arm.png" alt="" /></span>
+								
+									Since we assume a 2DOF drive train configuration, it would be ideal for the arm to remain 'forward facing.' Haviland et al showcase this relationship as 
+
+									$$ 
+									\epsilon = \text{k}_e \theta_\epsilon
+									$$
+									Where \(\epsilon\) is a scalar influenced by a gain \(\text{k}_e\) to determine how much effort should be placed into aligning the 'Base to End Effector' vector and 'Base Orientation' vector.
+									\(\theta_\epsilon\) is calculated as \(\theta_{\epsilon} = \text{atan2}(^{1,8}T_b, \ ^{0,8}T_b) \). 
+
+									<br/><br/>
+									To incorporate this relationship into the QP, we add this penalty to only the first revolute joint  as
+									$$
+									\epsilon = \begin{bmatrix} -k_\epsilon\theta_\epsilon \\
+									0_{n-1}								
+									\end{bmatrix} 
+									$$
+								
+								</p>
+
+
+							
+
+							<h3>Reformatting into the Hybrid Holistic Manipulator QP</h3>	
+							<p>
+								 Our QP will take the same form as (cQP) 
+
+
+							</p>
+							<p>$$\begin{alignat}{3} \tag{hQP}
+                                \underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
                                 \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
                                                                  &\quad& Ax &\le B  \\
                                                                  &\quad& X^- &\le x \le X^+
                             \end{alignat}$$</p>
 
 							<p>
+								with
+								$$
+								\begin{split}
+									\begin{alignat}{5}
+										x &= \begin{bmatrix} \dot{q} \\ \delta{} \end{bmatrix} \\
+										X^{-,+} &= \begin{bmatrix} \dot{q}^{-,+} \\ \delta{}^{-,+} \end{bmatrix} \\
+										
+										A &= \begin{bmatrix} A_b \\ A_{elev_p} \\ A_{elev_r} \\ A_a \\ 1_6 \end{bmatrix} = \begin{bmatrix} \pm{}1_{nxn+6}\end{bmatrix} \\
+										
+										B &= \begin{bmatrix} 0_b \\ B_{elev_p} \\ B_{elev_r} \\ B_a \end{bmatrix} \\
 
-								$$\begin{aligned}
-									X^- = \begin{bmatrix} \dot{q}^- \\ \delta{}^- \end{bmatrix} \\
-									X^+ = \begin{bmatrix} \dot{q}^+ \\ \delta{}^+ \end{bmatrix} \\
-									x = \begin{bmatrix} \dot{q} \\ \delta{} \end{bmatrix} \\
-
-									A = \begin{bmatrix} A_b \\ A_{elev_p} \\ A_{elev_r} \\ A_a \\ 1_6 \end{bmatrix} = \begin{bmatrix} \pm{}1_{nxn+6}\end{bmatrix} \\
-									B = \begin{bmatrix} 0_b \\ B_{elev_p} \\ B_{elev_r} \\ B_a \end{bmatrix} \\
-									
-									B_{elev_{p,r}},B_a = \begin{bmatrix} \frac{q_{elev_{p,r},a} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}} \\
-															\vdots{} \\
-															\frac{q_{n} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}}
-															\end{bmatrix} \\
-
-									Q = \begin{bmatrix} diag(\lambda{}_b) & \space & \space & 0_{(n+6)x(n+6)} \\
-														\space & diag(\lambda{}_{elev}) & \space & \space \\
-														\space & \space & diag(k_a) \space \\
-														0_{(n+6)x(n+6)} & \space & \space & diag(\lambda{}_\delta{})							
-														\end{bmatrix} \\
-
-									k_a = \text{constant} \\
-									\lambda{}_{elev} = \begin{pmatrix} \frac{1}{||e||} & k_{elev_r}\end{pmatrix} \\
-									\lambda{}_b,\lambda{}_\delta = \frac{1}{||e||} \\
-
-									C = \begin{bmatrix} 
+										B_{elev_{p,r}},B_a &= \begin{bmatrix} \frac{q_{elev_{p,r},a} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}} \\
+																\vdots{} \\
+																\frac{q_{n} - p_{s_{elev_{p,r},a}}}{p_{i_{elev_{p,r},a}} - p_{s_{elev_{p,r},a}}}
+																\end{bmatrix} 
+									\end{alignat}
+								\end{split}  \quad \quad
+								\begin{split}
+								\begin{aligned}
+									\mathcal{J}(q) &= \begin{bmatrix} \begin{smallmatrix} n \\ \space\end{smallmatrix}J_b(q) & 1_{6x6} \end{bmatrix} \\
+									Q &= \begin{bmatrix} diag(\lambda{}_b) & \space & \space & 0_{(n+6)\times(n+6)} \\
+											\space & diag(\lambda{}_{elev}) & \space & \space \\
+											\space & \space & diag(k_a) \space \\
+											0_{(n+6)\times(n+6)} & \space & \space & diag(\lambda{}_\delta{})							
+											\end{bmatrix} \\
+									C &= \begin{bmatrix} 
 										J_m + \epsilon \\ 0_{6x1}
 										\end{bmatrix} \\
-									J_m = \begin{bmatrix} 
+									J_m &= \begin{bmatrix} 
 										0_b \\ J_{m,a}^\top{}
 										\end{bmatrix} \\
-									\epsilon = \begin{bmatrix} -k_\epsilon\theta_\epsilon \\
-										0_{n-1}								
-										\end{bmatrix} \\
-								\end{aligned}$$
+								\end{aligned}
+								\end{split}
+								$$
+								
+								To begin, observe how each major part of the hybrid mobile manipulator has been decomposed: <i>base (\(b\)), elevator (\(elev\)), and arm (\(a\))</i> The elevator, in particular, has been seperated
+								into its prismatic and revolute components (\(elev_{p}\) and  \(elev_r\)). 
+
+								
+
+							</p>
+							<h4>Q Matrix</h4>
+							<p>
+								We define Q as a diagonal matrix  to weight one-to-one the corresponding optimization variables. However, some of these gains are constants while others are variables. We assign dynamic
+								gains to the mobile base, elevator, and slack to be with respect to error.  We define
+
+								$$
+								\begin{alignat}{3}
+									k_a &= \text{constant} \\
+									\lambda{}_{elev} &= \begin{pmatrix} \frac{1}{||e||} & k_{elev_r}\end{pmatrix} \\
+									\lambda{}_b,\lambda{}_\delta &= \frac{1}{||e||} \\
+								\end{alignat}
+								$$
+								where \(||e||\) is the distance of the 6DOF error vector (e). At the start of the operation, the distance to the goal will be large- causing the gain to become small. This influences the 
+								QP to put more emphasis on the base joints to drive forward at the start and less when the end effector is near the goal. We use this same concept for the prismatic joint of the elevator and the slack
+								variable.
+								However, we treat the two revolute joints of the elevator as part of the robot arm, creating a psuedo 9DOF serial linkage. Since we always want the arm to travel towards the goal, we use a constant
+								gain \(k_a\) for the explicit arm joints, and \(k_{elev_r}\) for the psuedo revolute joints of the elevator. 
+
+							</p>
+							<h4>C Matrix</h4>
+							<p>
+								The \(C\) matrix incorporates the Manipulability Jacobian and nonholonomic positioning bias. We expiremented with including the psuedo revolute elevator joints as apart of the Manipulability 
+								Jacobian but it is still being evaluated if this was fruitful. At the minimum, all 7 DOF from the arm are included in the Manipulability Jacobian. This is appended to a 0 matrix to not influence
+								the base or prismatic elevator joint. 
+								Since \(\epsilon\) is proportional scaler, it is perfectly fine to combine it with the Manipulability Jacobian since they influence different parts of the system. 
+							</p>
+							<h4>\(X^{-,+}\) Boundaries</h4>
+							<p>
+								As explored previously, we can cap the velocity of each joint in the system regardless of dimensionality. That is, this restriction contains both linear and angular velocity caps. Since \(x\) contains 
+								the slack variable, we can also limit the maximum amount of slack the QP can output. This prevents the arm from straying too far from the error vector.
+							</p>
+							<h4>A & B Matricies</h4>
+							<p>
+								The relationship \(Ax \le B\) defines the position dampener through a decaying velocity function. Indeed, we define a range to dampen for linear and angular components or specific sections. For example, the drive train
+								has no such dampener as it can drive and spin around itself indefinitely. However, the arm has physical limitations to how far each joint can articulate and this value must be obeyed to prevent damage. In this implementation,
+								we seperate the base, the prismatic elevator joint, the revolute elevator joints, and the arm joints. 
 							</p>
 
 							<!-- <p>
@@ -547,8 +699,21 @@
 								They become similar looking. 
 
 							</p> -->
-
-							<h2>Deriving the Manipulator Hessian Tensor</h2>
+							<h2>Capstone Presentation</h2>
+							<div style="position:relative;padding-top:70%;">
+								<iframe style="position:absolute;left:0;top:0;height:100%;width:100%;" src="images/MS/Capsone Presentation.pdf" width="640" height="480"></iframe>
+							</div>
+							<h2>Additional Media</h2>
+							<div class="box alt">
+								<div class="row gtr-uniform">
+									<div class="col-6"><span class="image fit"><img src="images/MS/IMG_3691.JPG" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/MS/IMG_3692.JPG" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/MS/IMG_3693.JPG" alt="" /></span></div>
+									<div class="col-6"><span class="image fit"><img src="images/MS/IMG_3694.JPG" alt="" /></span></div>
+								</div>
+							</div>
+							<h2>Math References</h2>
+							<h3>Deriving the Manipulator Hessian Tensor</h3>
 							<p>
 								$$\begin{alignat}{4} 
 									\dot{J} &= \frac{\text{d}J(q)}{\text{d}t} \\
@@ -559,30 +724,30 @@
 
 							</p>
 							
-							<h2>QP integrating Manipulability Maximization</h2>
+							<!-- <h2>QP integrating Manipulability Maximization</h2>
 							<p>The mobile manipulator his highly redundent as it has 13 DOFs when in a holonomic drive configuration and 12 DOFs when it its nonholonmic configuration. We can utilize the concept of manipulability
-								to help move the system in a good configuration while traversing to its goal. 
+								to help move the system in a good configuration while traversing to its goal.  -->
 
 
-							</p>
+							<!-- </p> -->
                             <!--Resolved Rate Motion Controller-->
-                            <p>$$\begin{aligned} v &= J\dot{q}
+                            <!-- <p>$$\begin{aligned} v &= J\dot{q}
                                 \\ \dot{q} &= J^\top{}v
                                 \\ v &\propto e
-                                \\ e &= p^*-p\end{aligned}$$</p>
+                                \\ e &= p^*-p\end{aligned}$$</p> -->
 
 
 
                             <!--Holistic Controller Eqn-->
-                            <p>$$\begin{alignat}{3} 
+                            <!-- <p>$$\begin{alignat}{3} 
                                 \underset{x}{\text{minimize$:$}} &\quad& f_0(x) &= \frac{1}{2}x^\top{}Qx + C^\top{}x \\
                                 \text{subject to$:$}             &\quad& \mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
                                                                  &\quad& Ax &\le B  \\
                                                                  &\quad& X^- &\le x \le X^+
-                            \end{alignat}$$</p>
+                            \end{alignat}$$</p> -->
 
                             <!--Holistic Controller Equation Variables-->
-                            <p>$$\begin{aligned}  
+                            <!-- <p>$$\begin{aligned}  
 								\mathcal{J}(q)x &= \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e \\
 								\mathcal{J}(q) = \begin{bmatrix} \begin{smallmatrix} b \\ \space\end{smallmatrix}J_e(q) & 1_{6x6} \end{bmatrix} \\
 								\begin{smallmatrix} b \\ \space\end{smallmatrix}v_e(t) = \begin{smallmatrix} b \\ \space\end{smallmatrix}v_e^*(t)-\delta{}(t) \\
@@ -633,12 +798,12 @@
 
 
 
-								\end{aligned}$$</p>
+								\end{aligned}$$</p> -->
 
                             <!--aligned math exasmple-->
-                            <p>$$\begin{aligned} 2x - 4 &= 6 \\ 2x &= 10 \\ x &= 5 \end{aligned}$$</p>
+                            <!-- <p>$$\begin{aligned} 2x - 4 &= 6 \\ 2x &= 10 \\ x &= 5 \end{aligned}$$</p> -->
 
-							<h2>Other Media</h2>
+							
 
 						</div>
 					</div>
